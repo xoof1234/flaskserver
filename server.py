@@ -10,6 +10,140 @@ from pred_gettargetcsv_RPM import getcsv
 from pred_RPM_pred_ip import pred
 import pybase64
 import time
+import mediapipe as mp
+import numpy as np
+import cv2
+
+def gen_pitcherholistic_frames(video_path):
+    '''
+    输入：原视频地址
+    '''
+    # 前半部分一個視頻只需做一次，能夠生成並存儲frame即可
+    mp_drawing = mp.solutions.drawing_utils
+    mp_drawing_styles = mp.solutions.drawing_styles
+    mp_holistic = mp.solutions.holistic
+    IMAGE_FILES = []
+
+    cap = cv2.VideoCapture(video_path)
+
+    frame_index = 0
+    frame_count = 0 # frame_index / interval
+    videoFPS = 60
+
+    if cap.isOpened():
+        success = True
+    else:
+        print('openerror!')
+        success = False
+
+    interval = 1  #視頻幀計數間隔次數
+    while success:
+        success, frame = cap.read()
+        frame_count = int(frame_index / interval)
+        if frame_index % interval == 0:
+            # cv2.imwrite('outputFile'+ '\\' + str(frame_count) + '.jpg', frame)
+            IMAGE_FILES.append(frame)
+        
+        frame_index += 1
+        # cv2.waitKey(1)
+    cap.release()
+
+    testcount = 0
+
+    # For static images:
+
+    with mp_holistic.Holistic(
+        static_image_mode=True,
+        model_complexity=2,
+        enable_segmentation=True,
+        refine_face_landmarks=True) as holistic:
+
+        for idx, file in enumerate(IMAGE_FILES):
+            # image = cv2.imread(file)
+            image = file
+            if image is not None:
+                image_height, image_width, _ = image.shape
+                # Convert the BGR image to RGB before processing.
+                results = holistic.process(cv2.cvtColor(image, cv2.COLOR_BGR2RGB))
+            else:
+                testcount += 1
+
+            if results.pose_landmarks:
+                print(
+                    f'Nose coordinates: ('
+                    f'{results.pose_landmarks.landmark[mp_holistic.PoseLandmark.NOSE].x * image_width}, '
+                    f'{results.pose_landmarks.landmark[mp_holistic.PoseLandmark.NOSE].y * image_height})'
+                )
+                print(results.pose_landmarks.landmark[mp_holistic.PoseLandmark.LEFT_INDEX].x * image_width)
+
+            if image is not None:
+                annotated_image = image.copy()
+
+            # Draw segmentation on the image.
+            # To improve segmentation around boundaries, consider applying a joint
+            # bilateral filter to "results.segmentation_mask" with "image".
+            # condition = np.stack((results.segmentation_mask,) * 3, axis=-1) > 0.1
+            # bg_image = np.zeros(image.shape, dtype=np.uint8)
+            # bg_image[:] = BG_COLOR
+            # annotated_image = np.where(condition, annotated_image, bg_image)
+            # Draw pose, left and right hands, and face landmarks on the image.
+            mp_drawing.draw_landmarks(
+                annotated_image,
+                results.face_landmarks,
+                mp_holistic.FACEMESH_TESSELATION,
+                landmark_drawing_spec=None,
+                connection_drawing_spec=mp_drawing_styles
+                .get_default_face_mesh_tesselation_style())
+            mp_drawing.draw_landmarks(
+                annotated_image,
+                results.pose_landmarks,
+                mp_holistic.POSE_CONNECTIONS,
+                landmark_drawing_spec=mp_drawing_styles.
+                get_default_pose_landmarks_style())
+            # cv2.imshow('frame', annotated_image)
+            # cv2.waitKey(20)
+
+            cv2.imwrite('file/pitcherholistic_frames/annotated_image' + str(idx) + '.png', annotated_image)
+            # Plot pose world landmarks.
+            # mp_drawing.plot_landmarks(
+            #     results.pose_world_landmarks, mp_holistic.POSE_CONNECTIONS)
+
+            # print('none count:',testcount)
+
+def frames2video(video_path):
+    '''
+    输入：原视频地址
+    '''
+    video = cv2.VideoCapture(video_path)
+    fps = video.get(cv2.CAP_PROP_FPS)
+    print("Frames per second using video.get(cv2.CAP_PROP_FPS) : {0}".format(fps))
+    video.release()
+
+    img = cv2.imread('file/pitcherholistic_frames/annotated_image0.png')  # 读取保存的任意一张图片
+    size = (img.shape[1],img.shape[0])  #获取视频中图片宽高度信息
+    fourcc = cv2.VideoWriter_fourcc(*"XVID") # 视频编码格式
+    videoWrite = cv2.VideoWriter('file/return/video_return.mov',fourcc,fps,size)# 根据图片的大小，创建写入对象 （文件名，支持的编码器，帧率，视频大小（图片大小））
+
+    files = os.listdir('file/pitcherholistic_frames')
+    out_num = len(files)
+    for i in range(0, out_num):
+        fileName = 'file/pitcherholistic_frames/annotated_image' + str(i) + '.png'    #循环读取所有的图片,假设以数字顺序命名
+        img = cv2.imread(fileName)
+        videoWrite.write(img)# 将图片写入所创建的视频对象
+    videoWrite.release() # 释放了才能完成写入，连续写多个视频的时候这句话非常关键
+
+def video_encode(video_path):
+    '''
+    输入：骨架视频地址
+    '''
+    with open(video_path, mode="rb") as f:
+        base64_data = pybase64.b64encode(f.read())
+        print(type(base64_data))  # <class 'bytes'>
+        f.close()
+
+    with open('file/return/json_return.txt',mode = 'wb') as f:
+        f.write(base64_data)
+        f.close()
 
 UPLOAD_FOLDER = r'C:\Users\Ricky\PycharmProjects\server\static'
 app = Flask(__name__)
@@ -18,6 +152,7 @@ app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 # app.config['MAX_CONTENT_LENGTH'] = 100 * 1024 * 1024
 path = 'C://Users//Ricky//PycharmProjects//server//file//uploded_video//t.txt'
 
+DO_BODY_DETECT = True
 
 @app.route('/')
 def upload_form():
@@ -56,6 +191,12 @@ def upload_video():
     ballspeed_video_name = video_path.split('\\')[-1]
     print(ballspeed_video_name)
     # ball_speed = blob(video_path,'outputMP4')
+    
+    if DO_BODY_DETECT:
+        gen_pitcherholistic_frames(filename)
+        frames2video(filename)
+        video_encode('file/return/video_return.mov')
+
     # lineball_path = cutball(video_path)
     # print('lineball_path',lineball_path)
     # getcsv(lineball_path)
