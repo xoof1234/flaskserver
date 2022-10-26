@@ -112,7 +112,8 @@ def gen_pitcherholistic_frames(video_name,video_path):
             # cv2.imshow('frame', annotated_image)
             # cv2.waitKey(20)
 
-            os.mkdir('file/pitcherholistic_frames/' + video_name + '/')
+            if not os.path.exists('file/pitcherholistic_frames/' + video_name + '/'):
+                os.mkdir('file/pitcherholistic_frames/' + video_name + '/')
             cv2.imwrite('file/pitcherholistic_frames/'+ video_name +'/'+ 'annotated_image' + str(idx) + '.png', annotated_image)
             # Plot pose world landmarks.
             # mp_drawing.plot_landmarks(
@@ -208,8 +209,6 @@ def upload_video():
     print('time cost', time_end - time_start, 's')
 
     # data = {"RPM":int(pred_spinrate)}
-    # data = {"RPM":int(ball_speed)}
-    # print(data)
 
     return jsonify(data_return)
 
@@ -233,6 +232,56 @@ def upload_video():
     #     print('upload_video filename: ' + filename)
     #     flash('Video successfully uploaded and displayed below')
     #     return render_template('upload.html', filename=filename)
+
+@app.route('/ballspeed', methods=['POST'])
+def ballspeed():
+    time_start = time.time()
+
+    for k, v in request.json.items():
+        if str(k) == 'video':
+            video_name = str(v)
+        if str(k) == 'content':
+            contents = bytes(str(v), encoding = "utf8")
+
+    videoData = pybase64.b64decode(contents)
+    folder_name = r"C:\Users\Ricky\PycharmProjects\server\file\uploded_video"
+    filename = folder_name + "\\" + video_name
+    # filename = video_name
+    with open(filename, "wb") as ff:
+        ff.write(videoData)
+    print('video done')
+    ff.close()
+
+    video_path = filename
+    print("video_path:",video_path)
+    ballspeed_video_name = video_path.split('\\')[-1]
+    print("ballspeed_video_name:",ballspeed_video_name)
+    # ball_speed = blob(video_path,'outputMP4')
+    
+    if DO_BODY_DETECT:
+        gen_pitcherholistic_frames(video_name,filename)
+        frames2video(video_name,filename)
+        video_return_str = video_encode('file/return/video_return.mov')
+
+    print('video return length:',len(video_return_str))
+    data_return = {"RPM":2000,"video_data": video_return_str}
+
+    # lineball_path = cutball(video_path)
+    # getcsv(lineball_path)
+    # pred_spinrate = pred()
+    # print('lineball_path',lineball_path)
+    # print(pred_spinrate)
+
+    # blob(video_name, outputDir, video_info)
+
+    time_end = time.time()
+    print('time cost', time_end - time_start, 's')
+
+    # data = {"RPM":int(pred_spinrate)}
+    # data = {"RPM":int(ball_speed)}
+    # print(data)
+
+    return jsonify(data_return)
 
 @app.route('/display/<filename>')
 def display_video(filename):
