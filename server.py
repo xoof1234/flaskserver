@@ -147,12 +147,15 @@ def video_encode(video_path):
     '''
     with open(video_path, mode="rb") as f:
         base64_data = pybase64.b64encode(f.read())
-        print(type(base64_data))  # <class 'bytes'>
+        # print(type(base64_data))  # <class 'bytes'>
         f.close()
 
-    with open('file/return/json_return.txt',mode = 'wb') as f:
-        f.write(base64_data)
-        f.close()
+    # 写出base64_data为视频
+    # with open('file/return/json_return.txt',mode = 'wb') as f:
+    #     f.write(base64_data)
+    #     f.close()
+
+    return str(base64_data,encoding = "utf8")
 
 @app.route('/')
 def upload_form():
@@ -202,7 +205,10 @@ def upload_video():
     if DO_BODY_DETECT:
         gen_pitcherholistic_frames(filename)
         frames2video(filename)
-        video_encode('file/return/video_return.mov')
+        video_return_str = video_encode('file/return/video_return.mov')
+
+    print('video return length:',len(video_return_str))
+    data_return = {"video_data": video_return_str}
 
     # lineball_path = cutball(video_path)
     # print('lineball_path',lineball_path)
@@ -218,8 +224,8 @@ def upload_video():
     # data = {"RPM":int(pred_spinrate)}
     # data = {"RPM": int(ball_speed)}
     # print(data)
-    data = {"RPM": 2000}
-    return jsonify(data)
+
+    return jsonify(data_return)
 
     # if 'file' not in request.files:
     #     print(request.files)
