@@ -166,21 +166,6 @@ def upload_form():
 def upload_video():
     time_start = time.time()
 
-    # f = open(path, 'w')
-    # video_name = ''
-
-    # for k, v in request.json.items():
-    #     if str(k) == 'video':
-    #         video_name = str(v)
-    #     if str(k) == 'content':
-    #         f.write(str(v))
-    # f.close()
-    # print('done write')
-    # print(video_name)
-
-    # ff = open(path)
-    # contents = ff.read()
-
     for k, v in request.json.items():
         if str(k) == 'video':
             video_name = str(v)
@@ -208,7 +193,7 @@ def upload_video():
         video_return_str = video_encode('file/return/video_return.mov')
 
     print('video return length:',len(video_return_str))
-    data_return = {"video_data": video_return_str}
+    data_return = {"RPM":2000,"video_data": video_return_str}
 
     # lineball_path = cutball(video_path)
     # print('lineball_path',lineball_path)
@@ -227,6 +212,7 @@ def upload_video():
 
     return jsonify(data_return)
 
+    # MAYBE USELESS
     # if 'file' not in request.files:
     #     print(request.files)
     #     # print(request.data)
