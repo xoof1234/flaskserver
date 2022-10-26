@@ -190,7 +190,7 @@ def spinrate():
     if DO_BODY_DETECT:
         gen_pitcherholistic_frames(video_name,filename)
         frames2video(video_name,filename)
-        video_return_str = video_encode('file/return/video_return.mov')
+        video_return_str = video_encode('file/return/video_return.avi')
 
     lineball_path = cutball(video_path)
     getcsv(lineball_path)
@@ -253,7 +253,7 @@ def ballspeed():
     if DO_BODY_DETECT:
         gen_pitcherholistic_frames(video_name,filename)
         frames2video(video_name,filename)
-        video_return_str = video_encode('file/return/video_return.mov')
+        video_return_str = video_encode('file/return/video_return.avi')
 
     print('ball_speed:',ball_speed)
     data_return = {"RPM":int(ball_speed),"video_data": video_return_str}
