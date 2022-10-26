@@ -164,8 +164,8 @@ def upload_form():
     return render_template('upload.html')
 
 
-@app.route('/upload', methods=['POST'])
-def upload_video():
+@app.route('/spinrate', methods=['POST'])
+def spinrate():
     time_start = time.time()
 
     for k, v in request.json.items():
@@ -177,38 +177,29 @@ def upload_video():
     videoData = pybase64.b64decode(contents)
     folder_name = r"C:\Users\Ricky\PycharmProjects\server\file\uploded_video"
     filename = folder_name + "\\" + video_name
-    # filename = video_name
+
     with open(filename, "wb") as ff:
         ff.write(videoData)
     print('video done')
     ff.close()
 
     video_path = filename
-    print("video_path:",video_path)
-    ballspeed_video_name = video_path.split('\\')[-1]
-    print("ballspeed_video_name:",ballspeed_video_name)
-    # ball_speed = blob(video_path,'outputMP4')
+    # print("video_path:",video_path)
     
     if DO_BODY_DETECT:
         gen_pitcherholistic_frames(video_name,filename)
         frames2video(video_name,filename)
         video_return_str = video_encode('file/return/video_return.mov')
 
-    print('video return length:',len(video_return_str))
-    data_return = {"RPM":2000,"video_data": video_return_str}
-
-    # lineball_path = cutball(video_path)
-    # getcsv(lineball_path)
-    # pred_spinrate = pred()
-    # print('lineball_path',lineball_path)
-    # print(pred_spinrate)
-
-    # blob(video_name, outputDir, video_info)
+    lineball_path = cutball(video_path)
+    getcsv(lineball_path)
+    pred_spinrate = pred()
+    print('lineball_path',lineball_path)
+    print(pred_spinrate)
+    data_return = {"RPM":int(pred_spinrate),"video_data": video_return_str}
 
     time_end = time.time()
     print('time cost', time_end - time_start, 's')
-
-    # data = {"RPM":int(pred_spinrate)}
 
     return jsonify(data_return)
 
