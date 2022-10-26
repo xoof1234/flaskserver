@@ -23,7 +23,7 @@ path = 'C://Users//Ricky//PycharmProjects//server//file//uploded_video//t.txt'
 
 DO_BODY_DETECT = True
 
-def gen_pitcherholistic_frames(video_path):
+def gen_pitcherholistic_frames(video_name,video_path):
     '''
     输入：原视频地址
     '''
@@ -112,14 +112,15 @@ def gen_pitcherholistic_frames(video_path):
             # cv2.imshow('frame', annotated_image)
             # cv2.waitKey(20)
 
-            cv2.imwrite('file/pitcherholistic_frames/annotated_image' + str(idx) + '.png', annotated_image)
+            os.mkdir('file/pitcherholistic_frames/' + video_name + '/')
+            cv2.imwrite('file/pitcherholistic_frames/'+ video_name +'/'+ 'annotated_image' + str(idx) + '.png', annotated_image)
             # Plot pose world landmarks.
             # mp_drawing.plot_landmarks(
             #     results.pose_world_landmarks, mp_holistic.POSE_CONNECTIONS)
 
             # print('none count:',testcount)
 
-def frames2video(video_path):
+def frames2video(video_name, video_path):
     '''
     输入：原视频地址
     '''
@@ -128,7 +129,7 @@ def frames2video(video_path):
     print("Frames per second using video.get(cv2.CAP_PROP_FPS) : {0}".format(fps))
     video.release()
 
-    img = cv2.imread('file/pitcherholistic_frames/annotated_image0.png')  # 读取保存的任意一张图片
+    img = cv2.imread('file/pitcherholistic_frames/' + video_name + '/' + 'annotated_image0.png')  # 读取保存的任意一张图片
     size = (img.shape[1],img.shape[0])  #获取视频中图片宽高度信息
     fourcc = cv2.VideoWriter_fourcc(*"XVID") # 视频编码格式
     videoWrite = cv2.VideoWriter('file/return/video_return.mov',fourcc,fps,size)# 根据图片的大小，创建写入对象 （文件名，支持的编码器，帧率，视频大小（图片大小））
@@ -136,7 +137,7 @@ def frames2video(video_path):
     files = os.listdir('file/pitcherholistic_frames')
     out_num = len(files)
     for i in range(0, out_num):
-        fileName = 'file/pitcherholistic_frames/annotated_image' + str(i) + '.png'    #循环读取所有的图片,假设以数字顺序命名
+        fileName = 'file/pitcherholistic_frames/' + video_name + '/' + 'annotated_image' + str(i) + '.png'    #循环读取所有的图片,假设以数字顺序命名
         img = cv2.imread(fileName)
         videoWrite.write(img)# 将图片写入所创建的视频对象
     videoWrite.release() # 释放了才能完成写入，连续写多个视频的时候这句话非常关键
@@ -182,14 +183,14 @@ def upload_video():
     ff.close()
 
     video_path = filename
-    print(video_path)
+    print("video_path:",video_path)
     ballspeed_video_name = video_path.split('\\')[-1]
-    print(ballspeed_video_name)
+    print("ballspeed_video_name:",ballspeed_video_name)
     # ball_speed = blob(video_path,'outputMP4')
     
     if DO_BODY_DETECT:
-        gen_pitcherholistic_frames(filename)
-        frames2video(filename)
+        gen_pitcherholistic_frames(video_name,filename)
+        frames2video(video_name,filename)
         video_return_str = video_encode('file/return/video_return.mov')
 
     print('video return length:',len(video_return_str))
