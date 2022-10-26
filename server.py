@@ -247,7 +247,7 @@ def ballspeed():
     print("video_path:",video_path)
     ballspeed_video_name = video_path.split('\\')[-1]
     print("ballspeed_video_name:",ballspeed_video_name)
-    # ball_speed = blob(video_path,'outputMP4')
+    ball_speed = blob(video_path,'outputMP4')
     
     if DO_BODY_DETECT:
         gen_pitcherholistic_frames(video_name,filename)
@@ -255,21 +255,14 @@ def ballspeed():
         video_return_str = video_encode('file/return/video_return.mov')
 
     print('video return length:',len(video_return_str))
-    data_return = {"RPM":2000,"video_data": video_return_str}
+    data_return = {"RPM":100,"video_data": video_return_str}
 
-    # lineball_path = cutball(video_path)
-    # getcsv(lineball_path)
-    # pred_spinrate = pred()
-    # print('lineball_path',lineball_path)
-    # print(pred_spinrate)
-
-    # blob(video_name, outputDir, video_info)
+    lineball_path = cutball(video_path)
+    print('lineball_path',lineball_path)
 
     time_end = time.time()
     print('time cost', time_end - time_start, 's')
-
-    # data = {"RPM":int(pred_spinrate)}
-    # data = {"RPM":int(ball_speed)}
+    data = {"RPM":int(ball_speed)}
     # print(data)
 
     return jsonify(data_return)
