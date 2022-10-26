@@ -133,10 +133,11 @@ def frames2video(video_name, video_path):
     img = cv2.imread('file/pitcherholistic_frames/' + video_name + '/' + 'annotated_image0.png')  # 读取保存的任意一张图片
     size = (img.shape[1],img.shape[0])  #获取视频中图片宽高度信息
     fourcc = cv2.VideoWriter_fourcc(*"XVID") # 视频编码格式
-    videoWrite = cv2.VideoWriter('file/return/video_return.mov',fourcc,fps,size)# 根据图片的大小，创建写入对象 （文件名，支持的编码器，帧率，视频大小（图片大小））
+    videoWrite = cv2.VideoWriter('file/return/video_return.avi',fourcc,fps,size)# 根据图片的大小，创建写入对象 （文件名，支持的编码器，帧率，视频大小（图片大小））
 
-    files = os.listdir('file/pitcherholistic_frames')
+    files = os.listdir('file/pitcherholistic_frames/'+ video_name)
     out_num = len(files)
+    print('frame number',out_num)
     for i in range(0, out_num):
         fileName = 'file/pitcherholistic_frames/' + video_name + '/' + 'annotated_image' + str(i) + '.png'    #循环读取所有的图片,假设以数字顺序命名
         img = cv2.imread(fileName)
@@ -195,7 +196,7 @@ def spinrate():
     getcsv(lineball_path)
     pred_spinrate = pred()
     print('lineball_path',lineball_path)
-    print(pred_spinrate)
+    print('pred_spinrate',pred_spinrate)
     data_return = {"RPM":int(pred_spinrate),"video_data": video_return_str}
 
     time_end = time.time()
@@ -254,54 +255,49 @@ def ballspeed():
         frames2video(video_name,filename)
         video_return_str = video_encode('file/return/video_return.mov')
 
-    print('video return length:',len(video_return_str))
-    data_return = {"RPM":100,"video_data": video_return_str}
-
-    lineball_path = cutball(video_path)
-    print('lineball_path',lineball_path)
+    print('ball_speed:',ball_speed)
+    data_return = {"RPM":int(ball_speed),"video_data": video_return_str}
 
     time_end = time.time()
     print('time cost', time_end - time_start, 's')
-    data = {"RPM":int(ball_speed)}
-    # print(data)
 
     return jsonify(data_return)
 
-@app.route('/display/<filename>')
-def display_video(filename):
-    # print('display_video filename: ' + filename)
-    return redirect(url_for('static', filename='uploads/' + filename), code=301)
+# @app.route('/display/<filename>')
+# def display_video(filename):
+#     # print('display_video filename: ' + filename)
+#     return redirect(url_for('static', filename='uploads/' + filename), code=301)
 
 
-# stores = [
-#     {
-#         'name':'Cool Store',
-#         'items':[
-#             {
-#                 'name':'Coll Item',
-#                 'price':9.99
-#             }
-#         ]
-#     }
-# ]
+# # stores = [
+# #     {
+# #         'name':'Cool Store',
+# #         'items':[
+# #             {
+# #                 'name':'Coll Item',
+# #                 'price':9.99
+# #             }
+# #         ]
+# #     }
+# # ]
 
-# @app.route('/')
-# def home():
-#     return render_template('index.html')
+# # @app.route('/')
+# # def home():
+# #     return render_template('index.html')
 
-# @app.route('/store')
-# def get_stores():
-#     return jsonify({'stores':stores})
+# # @app.route('/store')
+# # def get_stores():
+# #     return jsonify({'stores':stores})
 
-# @app.route('/store' , methods=['POST'])
-# def create_store():
-#   request_data = request.get_json()
-#   new_store = {
-#     'name':request_data['name'],
-#     'items':[]
-#   }
-#   stores.append(new_store)
-#   return jsonify(new_store)
+# # @app.route('/store' , methods=['POST'])
+# # def create_store():
+# #   request_data = request.get_json()
+# #   new_store = {
+# #     'name':request_data['name'],
+# #     'items':[]
+# #   }
+# #   stores.append(new_store)
+# #   return jsonify(new_store)
 
 
 if __name__ == "__main__":
