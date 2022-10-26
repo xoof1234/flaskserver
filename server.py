@@ -196,9 +196,9 @@ def upload_video():
     data_return = {"RPM":2000,"video_data": video_return_str}
 
     # lineball_path = cutball(video_path)
-    # print('lineball_path',lineball_path)
     # getcsv(lineball_path)
     # pred_spinrate = pred()
+    # print('lineball_path',lineball_path)
     # print(pred_spinrate)
 
     # blob(video_name, outputDir, video_info)
@@ -207,7 +207,7 @@ def upload_video():
     print('time cost', time_end - time_start, 's')
 
     # data = {"RPM":int(pred_spinrate)}
-    # data = {"RPM": int(ball_speed)}
+    # data = {"RPM":int(ball_speed)}
     # print(data)
 
     return jsonify(data_return)
