@@ -14,6 +14,15 @@ import mediapipe as mp
 import numpy as np
 import cv2
 
+UPLOAD_FOLDER = r'C:\Users\Ricky\PycharmProjects\server\static'
+app = Flask(__name__)
+app.secret_key = "secret key"
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+# app.config['MAX_CONTENT_LENGTH'] = 100 * 1024 * 1024
+path = 'C://Users//Ricky//PycharmProjects//server//file//uploded_video//t.txt'
+
+DO_BODY_DETECT = True
+
 def gen_pitcherholistic_frames(video_path):
     '''
     输入：原视频地址
@@ -145,15 +154,6 @@ def video_encode(video_path):
         f.write(base64_data)
         f.close()
 
-UPLOAD_FOLDER = r'C:\Users\Ricky\PycharmProjects\server\static'
-app = Flask(__name__)
-app.secret_key = "secret key"
-app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
-# app.config['MAX_CONTENT_LENGTH'] = 100 * 1024 * 1024
-path = 'C://Users//Ricky//PycharmProjects//server//file//uploded_video//t.txt'
-
-DO_BODY_DETECT = True
-
 @app.route('/')
 def upload_form():
     return render_template('upload.html')
@@ -163,20 +163,27 @@ def upload_form():
 def upload_video():
     time_start = time.time()
 
-    f = open(path, 'w')
-    video_name = ''
+    # f = open(path, 'w')
+    # video_name = ''
+
+    # for k, v in request.json.items():
+    #     if str(k) == 'video':
+    #         video_name = str(v)
+    #     if str(k) == 'content':
+    #         f.write(str(v))
+    # f.close()
+    # print('done write')
+    # print(video_name)
+
+    # ff = open(path)
+    # contents = ff.read()
 
     for k, v in request.json.items():
         if str(k) == 'video':
             video_name = str(v)
         if str(k) == 'content':
-            f.write(str(v))
-    f.close()
-    print('done write')
-    print(video_name)
+            contents = bytes(str(v), encoding = "utf8")
 
-    ff = open(path)
-    contents = ff.read()
     videoData = pybase64.b64decode(contents)
     folder_name = r"C:\Users\Ricky\PycharmProjects\server\file\uploded_video"
     filename = folder_name + "\\" + video_name
