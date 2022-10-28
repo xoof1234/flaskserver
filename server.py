@@ -154,9 +154,9 @@ def video_encode(video_path):
         f.close()
 
     # 写出base64_data为视频
-    # with open('file/return/json_return.txt',mode = 'wb') as f:
-    #     f.write(base64_data)
-    #     f.close()
+    with open('file/return/json_return.txt',mode = 'wb') as f:
+        f.write(base64_data)
+        f.close()
 
     return str(base64_data,encoding = "utf8")
 

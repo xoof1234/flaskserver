@@ -141,7 +141,7 @@ def blob(video_name, outputDir):
                                             #         else:
                                             #             frame_rate = 0
                                             #
-                                            velo = 3600 * (110) * dist / (1000 * pixelToMeter)
+                                            velo = 3600 * (235) * dist / (1000 * pixelToMeter)
                                             if velo > 60 and velo < 160:
                                                 tmpVelo.append(velo)
                                         else:
