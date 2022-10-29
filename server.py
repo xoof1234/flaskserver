@@ -77,13 +77,13 @@ def gen_pitcherholistic_frames(video_name,video_path):
             else:
                 testcount += 1
 
-            if results.pose_landmarks:
-                print(
-                    f'Nose coordinates: ('
-                    f'{results.pose_landmarks.landmark[mp_holistic.PoseLandmark.NOSE].x * image_width}, '
-                    f'{results.pose_landmarks.landmark[mp_holistic.PoseLandmark.NOSE].y * image_height})'
-                )
-                print(results.pose_landmarks.landmark[mp_holistic.PoseLandmark.LEFT_INDEX].x * image_width)
+            # if results.pose_landmarks:
+            #     print(
+            #         f'Nose coordinates: ('
+            #         f'{results.pose_landmarks.landmark[mp_holistic.PoseLandmark.NOSE].x * image_width}, '
+            #         f'{results.pose_landmarks.landmark[mp_holistic.PoseLandmark.NOSE].y * image_height})'
+            #     )
+            #     print(results.pose_landmarks.landmark[mp_holistic.PoseLandmark.LEFT_INDEX].x * image_width)
 
             if image is not None:
                 annotated_image = image.copy()
@@ -158,6 +158,10 @@ def video_encode(video_path):
         f.write(base64_data)
         f.close()
 
+    # with open('file/return/json_return.txt',mode = 'wb') as f:
+    #     f.write(base64_data)
+    #     f.close()
+
     return str(base64_data,encoding = "utf8")
 
 @app.route('/')
@@ -197,7 +201,8 @@ def spinrate():
     pred_spinrate = pred()
     print('lineball_path',lineball_path)
     print('pred_spinrate',pred_spinrate)
-    data_return = {"RPM":int(pred_spinrate),"video_data": video_return_str}
+    # data_return = {"RPM":int(pred_spinrate),"video_data": video_return_str}
+    data_return = {"RPM": int(pred_spinrate)}--0
 
     time_end = time.time()
     print('processing time', time_end - time_start, 's')

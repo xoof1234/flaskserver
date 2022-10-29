@@ -25,7 +25,7 @@ def blob(video_name, outputDir):
     history = 8
     varThreshold = 100
     bShadowDetection = True
-    pixelToMeter = 375.75
+    pixelToMeter = 244.57
     fourcc = cv2.VideoWriter_fourcc(*'mp4v')
     fname = video_name.split('\\')[-1]
     fname = fname.split('.')[0]
@@ -129,7 +129,7 @@ def blob(video_name, outputDir):
                                         # print(frame_record[frame_record_counter])
 
                                         if frame_record[frame_record_counter] - frame_record[
-                                            frame_record_counter - 1] == 2:
+                                            frame_record_counter - 1] == 1:
                                             frame_record_counter = frame_record_counter + 1
                                             # print("INSIDE_FRAM_NUMBER: ", frame_count)
                                             diffx = abs(cx - lastCenter[0])  # 兩顆球之間的距離而已
@@ -141,7 +141,8 @@ def blob(video_name, outputDir):
                                             #         else:
                                             #             frame_rate = 0
                                             #
-                                            velo = 3600 * (235) * dist / (1000 * pixelToMeter)
+                                            velo = 3600 * (240) * dist / (1000 * pixelToMeter)
+                                            # print(velo)
                                             if velo > 60 and velo < 160:
                                                 tmpVelo.append(velo)
                                         else:
