@@ -21,7 +21,7 @@ app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 # app.config['MAX_CONTENT_LENGTH'] = 100 * 1024 * 1024
 path = 'C://Users//Ricky//PycharmProjects//server//file//uploded_video//t.txt'
 
-DO_BODY_DETECT = True
+DO_BODY_DETECT = False
 
 def gen_pitcherholistic_frames(video_name,video_path):
     '''
@@ -200,7 +200,7 @@ def spinrate():
     data_return = {"RPM":int(pred_spinrate),"video_data": video_return_str}
 
     time_end = time.time()
-    print('time cost', time_end - time_start, 's')
+    print('processing time', time_end - time_start, 's')
 
     return jsonify(data_return)
 
@@ -256,10 +256,11 @@ def ballspeed():
         video_return_str = video_encode('file/return/video_return.avi')
 
     print('ball_speed:',ball_speed)
-    data_return = {"RPM":int(ball_speed),"video_data": video_return_str}
+    # data_return = {"RPM":int(ball_speed),"video_data": video_return_str}
+    data_return = {"RPM":int(ball_speed)}
 
     time_end = time.time()
-    print('time cost', time_end - time_start, 's')
+    print('processing time:', time_end - time_start, 's')
 
     return jsonify(data_return)
 
