@@ -29,27 +29,48 @@ def pred():
     s_min = 900
     s_max = 3100
 
+    Count =0
+  
     for i in range(int(len(df))):
         inputs = []
-        for j in range(1,11):
+        for j in range(1,6):
             path = df.iloc[i][j]
-            img = cv2.imread(path)
-            resImg = cv2.resize(img, (48, 48))
-            resImg = np.expand_dims(resImg, axis=0)
-            resImg = resImg / 255.0
-            inputs.append(resImg)
+            if (Count == 0):
+                Img1 = cv2.imread(path)
+                resImg1 = cv2.resize(Img1, (48,48))
 
-        RPM = df.iloc[i][11]
-        test_y_true.append(RPM)
+                Img = resImg1
+            else:
+                Img1 = cv2.imread(path)
+                resImg1 = cv2.resize(Img1, (48,48))
+                Img = np.concatenate((Img, resImg1), -1)
+            Count += 1
 
-        predict = model.predict(inputs)
+        Img = Img / 255.0
+        Img = np.expand_dims(Img,axis=0)
 
+        predict = model.predict(Img)
+        Count =0
         test_predict.append(predict)
+
+            # path = df.iloc[i][j]
+            # img = cv2.imread(path)
+            # resImg = cv2.resize(img, (48, 48))
+            # resImg = np.expand_dims(resImg, axis=0)
+            # resImg = resImg / 255.0
+            # inputs.append(resImg)
+
+        # RPM = df.iloc[i][11]
+        # test_y_true.append(RPM)
+
+        # predict = model.predict(inputs)
+        # test_predict.append(predict)
         #print(predict)
         #print(type(predict)) #numpy.ndarray
     test_predict_temp = []
     for i in range(len(test_predict)):
-        pred = test_predict[i][0][0] * (s_max - s_min) + s_min
+        pred = test_predict[i][0][0]
+        # pred = test_predict[i][0][0] * (s_max - s_min) + s_min
         test_predict_temp.append(pred)
         #print(test_predict[i][0][0])
 
