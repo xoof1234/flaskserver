@@ -64,7 +64,7 @@ def cutball(video_path):
     for i in range(len(ball_to_line_img)):
         #filename = tk_path + '{}_ball_line/{}_cam_7_{}/'.format(date,tk_date,videoids) +str(ball_frame_name[i]) + '.jpg'
         filename = tk_path + '{}_ball_line/{}/'.format(date,videoid) + str(ball_frame_names[i]) + '.png'
-        lineball_path = tk_path + '{}_ball_line/{}/'.format(date,videoid)
+        lineball_path = tk_path + '{}_ball_line/{}'.format(date,videoid)
         cv2.imwrite(filename,ball_to_line_img[i])
 
     print(lineball_path)

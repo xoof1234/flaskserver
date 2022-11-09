@@ -275,17 +275,12 @@ def getcsv(lineball_path):
     folder_path = lineball_path
     # folder_list = os.listdir(ball_path)
     # folder_list所有資料夾的list
-    df = pd.DataFrame(columns=['first', 'second', 'third', 'fourth', 'fifth', 'sixth', 'seventh', 'eighth', "nine" , "ten" ,  'spinrate','Norm_spinrate','Norm_spinrate_minus'])
+    df = pd.DataFrame(columns=['first', 'second', 'third', 'fourth', 'fifth',  'spinrate','Norm_spinrate','Norm_spinrate_minus'])
     save_1 = []
     save_2 = []
     save_3 = []
     save_4 = []
     save_5 = []
-    save_6 = []
-    save_7 = []
-    save_8 = []
-    save_9 = []
-    save_10 = []
     spinrate_list = []
     Norm_spinrate_list = []
     minus_Norm_spinrate_list = []
@@ -302,29 +297,19 @@ def getcsv(lineball_path):
     #     video_path = ball_path + '\\' + p
     #     img_name_list.sort(key=lambda x: int(x.split('.')[0]))
 
-    for i in range(len(img_name_list) - 10 + 1):
-        if ((int(img_name_list[i].split('.')[0]) + 9) == int(img_name_list[i + 9].split('.')[0])):
+    for i in range(len(img_name_list) - 5 + 1):
+        if ((int(img_name_list[i].split('.')[0]) + 4) == int(img_name_list[i + 4].split('.')[0])):
             save_1.append(video_path + '\\' + img_name_list[i])
             save_2.append(video_path + '\\' + img_name_list[i + 1])
             save_3.append(video_path + '\\' + img_name_list[i + 2])
             save_4.append(video_path + '\\' + img_name_list[i + 3])
             save_5.append(video_path + '\\' + img_name_list[i + 4])
-            save_6.append(video_path + '\\' + img_name_list[i + 5])
-            save_7.append(video_path + '\\' + img_name_list[i + 6])
-            save_8.append(video_path + '\\' + img_name_list[i + 7])
-            save_9.append(video_path + '\\' + img_name_list[i + 8])
-            save_10.append(video_path + '\\' + img_name_list[i + 9])
 
     df['first'] = save_1
     df['second'] = save_2
     df['third'] = save_3
     df['fourth'] = save_4
     df['fifth'] = save_5
-    df['sixth'] = save_6
-    df['seventh'] = save_7
-    df['eighth'] = save_8
-    df['nine'] = save_9
-    df['ten'] = save_10
     # df['spinrate'] = spinrate_list
     # df['Norm_spinrate'] = Norm_spinrate_list
     # df["Norm_spinrate_minus"] = minus_Norm_spinrate_list
