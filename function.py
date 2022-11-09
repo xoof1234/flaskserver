@@ -54,10 +54,10 @@ def cutframe_iphone(video_name):
                 cont, hierarchy = cv2.findContours(opening, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_TC89_L1)
 
                 for c in cont:
-                    ROI_xleft = 770
-                    ROI_xright = 1250
-                    ROI_ytop = 50
-                    ROI_ydown = 550
+                    ROI_xleft = 800
+                    ROI_xright = 1600
+                    ROI_ytop = 400
+                    ROI_ydown = 800
                     cv2.rectangle(frame,(ROI_xleft,ROI_ytop),(ROI_xright,ROI_ydown),(0,255,0),2)
                     #面積
                     if (cv2.contourArea(c) < 1800 and (cv2.contourArea(c) > 270)):
