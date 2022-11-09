@@ -7,7 +7,7 @@ import shutil
 
 
 def undistortion(mtx, dist,video_path):
-    # picture
+    ### picture
     # img = cv2.imread('source_video\messageImage_1655541173218.jpg')
     # h, w = img.shape[:2]
     # newcameramtx, roi = cv2.getOptimalNewCameraMatrix(mtx, dist, (w, h), 1, (w, h))

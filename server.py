@@ -13,6 +13,8 @@ import time
 import mediapipe as mp
 import numpy as np
 import cv2
+import glob
+from calibration import undistortion
 
 UPLOAD_FOLDER = './static'
 app = Flask(__name__)
@@ -250,44 +252,47 @@ def ballspeed():
     ff.close()
 
     video_path = filename
-    print("video_path:",video_path)
+    print("video_path:",video_path) #C:\Users\Ricky\PycharmProjects\server\file\uploded_video\output_20221109142508.mov
     ballspeed_video_name = video_path.split('\\')[-1]
     print("ballspeed_video_name:",ballspeed_video_name)
 
     # emptydir('output')
+    cal_path = "./file/cal_video/" + ballspeed_video_name
+    print("cal_path: ", cal_path)
 
-    # criteria = (cv2.TERM_CRITERIA_EPS + cv2.TERM_CRITERIA_MAX_ITER, 30, 0.001)
-    # objp = np.zeros((4*4, 3), np.float32)
-    # objp[:,:2] = np.mgrid[0:4, 0:4].T.reshape(-1,2)
-    #
-    # objpoints = []
-    # imgpoints = []
-    #
-    #
-    # images = glob.glob('file/chessboard/*.png')
-    #
-    # for fname in images:
-    #     img = cv2.imread(fname)
-    #     img = cv2.resize(img, (1920, 1080))
-    #     gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-    #
-    #     ret, corners = cv2.findChessboardCorners(gray, (4,4), None)
-    #
-    #     if ret == True:
-    #         objpoints.append(objp)
-    #         corners2 = cv2.cornerSubPix(gray, corners, (5, 5), (-1, -1), criteria)
-    #         imgpoints.append(corners)
-    #         cv2.drawChessboardCorners(img, (4,4), corners2, ret)
-    #     # cv2.imshow('frame', img)
-    #     if cv2.waitKey(0) == 27:
-    #         break
-    #
-    # ret, mtx, dist, rvecs, tvecs = cv2.calibrateCamera(objpoints, imgpoints, gray.shape[::-1], None, None)
-    # print("mtx:", mtx)
-    # print("dist:", dist)
-    # undistortion(mtx, dist)
+    criteria = (cv2.TERM_CRITERIA_EPS + cv2.TERM_CRITERIA_MAX_ITER, 30, 0.001)
+    objp = np.zeros((4*4, 3), np.float32)
+    objp[:,:2] = np.mgrid[0:4, 0:4].T.reshape(-1,2)
 
-    ball_speed = blob(video_path,'outputMP4')
+    objpoints = []
+    imgpoints = []
+    #
+    #
+    images = glob.glob('file/chessboard/*.png')
+    #
+    for fname in images:
+        img = cv2.imread(fname)
+        img = cv2.resize(img, (1920, 1080))
+        gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+
+        ret, corners = cv2.findChessboardCorners(gray, (4,4), None)
+
+        if ret == True:
+            objpoints.append(objp)
+            corners2 = cv2.cornerSubPix(gray, corners, (5, 5), (-1, -1), criteria)
+            imgpoints.append(corners)
+            cv2.drawChessboardCorners(img, (4,4), corners2, ret)
+        # cv2.imshow('frame', img)
+        if cv2.waitKey(0) == 27:
+            break
+
+    ret, mtx, dist, rvecs, tvecs = cv2.calibrateCamera(objpoints, imgpoints, gray.shape[::-1], None, None)
+    print("mtx:", mtx)
+    print("dist:", dist)
+    undistortion(mtx, dist,video_path)
+
+
+    ball_speed = blob(cal_path,'outputMP4')
     
     if DO_BODY_DETECT:
         gen_pitcherholistic_frames(video_name,filename)

@@ -195,16 +195,3 @@ def blob(video_name, outputDir):
 
     return pitchVelo
 
-
-aviFiles = glob.glob(os.path.join("output", "*.mp4"))
-
-emptydir('outputMP4')
-emptydir('data')
-video_info = []
-
-for avi in aviFiles:
-    video_name = avi.split('\\')[1]
-    print(video_name)
-    video_info = video_name.split('_')
-    print('video_info: ',video_info)
-    blob(avi, 'outputMP4')
