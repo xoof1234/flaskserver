@@ -1,26 +1,25 @@
 
 from function import *
 from model import ballLineModel
-from PIL import Image
 
 # 用于判断是否是球的threshold
 THRESHOLD=0.5
 
-# # 将图片转化为RGB
-# def make_regalur_image(img, size=(64, 64)):
-#     gray_image = img.resize(size).convert('RGB')
-#     return gray_image
- 
-# # 计算直方图
-# def hist_similar(lh, rh):
-#     assert len(lh) == len(rh)
-#     hist = sum(1 - (0 if l == r else float(abs(l-r))/max(l,r))for l, r in zip(lh, rh))/len(lh)
-#     return hist
- 
-# # 计算相似度
-# def calc_similar(li, ri):
-#     calc_sim = hist_similar(li.histogram(), ri.histogram())
-#     return calc_sim
+def calculate(image1, image2):
+    # 灰度直方图算法
+    # 计算单通道的直方图的相似值
+    hist1 = cv2.calcHist([image1], [0], None, [256], [0.0, 255.0])
+    hist2 = cv2.calcHist([image2], [0], None, [256], [0.0, 255.0])
+    # 计算直方图的重合度
+    degree = 0
+    for i in range(len(hist1)):
+        if hist1[i] != hist2[i]:
+            degree = degree + \
+                (1 - abs(hist1[i] - hist2[i]) / max(hist1[i], hist2[i]))
+        else:
+            degree = degree + 1
+    degree = degree / len(hist1)
+    return degree
 
 def cutball(video_path):
     os.environ["CUDA_VISIBLE_DEVICES"] = ""
@@ -63,13 +62,11 @@ def cutball(video_path):
 
         filename = tk_path + '{}_ball/{}/'.format(date,videoid) + str(ball_frame_names[i]) + '.png'
 
-        # image1 = Image.open('./file/standard_ball/30.png')
-        # image1 = make_regalur_image(image1)
+        image1 = cv2.imread('./file/standard_ball/296.png')
+        similiarity = calculate(image1, ball_frames[i])
 
-        # similiarity = calc_similar(image1, ball_frames[i])
-
-        # if similiarity>THRESHOLD:
-        cv2.imwrite(filename,ball_frames[i])
+        if similiarity>THRESHOLD:
+            cv2.imwrite(filename,ball_frames[i])
     # for i in range(len(video_frames)):
 
     #     filename = tk_path + '{}_video_frame/{}/'.format(date,videoid) +str(i) + '.png'
