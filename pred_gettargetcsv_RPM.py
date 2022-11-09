@@ -186,12 +186,12 @@ def calculate(folder_list, m):
     return folder_list
 
 def fivefold_175fps():
-    ball_path = r'C:\Users\Ricky\Desktop\server\file\uploded_video_ball_line\08042022_113148.mov'
+    ball_path = './file/uploded_video_ball_line/08042022_113148.mov'
     # 之後要修改為上傳文件名的路徑
     #kfold_csv = pd.read_csv(r"D:\Model_data\processed\csv\5fold.csv") # 如果有5fold.csv跑這個
     kfold_csv = kfold(ball_path)  # 如果沒有5fold.csv跑這個
 
-    save_resultcsv_path = r'D:\My_Files\zly_python_file\baseball\python\server\file\csv'
+    save_resultcsv_path = './file/csv'
 
     for m in range(2):
         for n in range(5):
@@ -271,7 +271,7 @@ def fivefold_175fps():
 
 def getcsv(lineball_path):
     # ball_path = r'D:\My_Files\zly_python_file\baseball\python\server\file\uploded_video_ball_line'
-    save_resultcsv_path = r'C:\Users\Ricky\PycharmProjects\server\file\csv\origin.csv'
+    save_resultcsv_path = './file/csv/origin.csv'
     folder_path = lineball_path
     # folder_list = os.listdir(ball_path)
     # folder_list所有資料夾的list
