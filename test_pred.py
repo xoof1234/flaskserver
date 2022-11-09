@@ -8,6 +8,6 @@ video_name = 'gen_frames_test.mp4'
 video_path = './test_file_src/'+ video_name
 
 lineball_path = cutball(video_path)
-getcsv(lineball_path)
-pred_spinrate = pred()
-print('pred_spinrate',pred_spinrate)
+# getcsv(lineball_path)
+# pred_spinrate = pred()
+# print('pred_spinrate',pred_spinrate)
