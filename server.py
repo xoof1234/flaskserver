@@ -14,12 +14,12 @@ import mediapipe as mp
 import numpy as np
 import cv2
 
-UPLOAD_FOLDER = r'C:\Users\Ricky\PycharmProjects\server\static'
+UPLOAD_FOLDER = './static'
 app = Flask(__name__)
 app.secret_key = "secret key"
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 # app.config['MAX_CONTENT_LENGTH'] = 100 * 1024 * 1024
-path = 'C://Users//Ricky//PycharmProjects//server//file//uploded_video//t.txt'
+# path = 'C://Users//Ricky//PycharmProjects//server//file//uploded_video//t.txt'
 
 DO_BODY_DETECT = False
 
@@ -180,7 +180,7 @@ def spinrate():
             contents = bytes(str(v), encoding = "utf8")
 
     videoData = pybase64.b64decode(contents)
-    folder_name = r"C:\Users\Ricky\PycharmProjects\server\file\uploded_video"
+    folder_name = "./file/uploded_video"
     filename = folder_name + "\\" + video_name
 
     with open(filename, "wb") as ff:
@@ -202,7 +202,7 @@ def spinrate():
     print('lineball_path',lineball_path)
     print('pred_spinrate',pred_spinrate)
     # data_return = {"RPM":int(pred_spinrate),"video_data": video_return_str}
-    data_return = {"RPM": int(pred_spinrate)}--0
+    data_return = {"RPM": int(pred_spinrate)}
 
     time_end = time.time()
     print('processing time', time_end - time_start, 's')
@@ -241,7 +241,7 @@ def ballspeed():
             contents = bytes(str(v), encoding = "utf8")
 
     videoData = pybase64.b64decode(contents)
-    folder_name = r"C:\Users\Ricky\PycharmProjects\server\file\uploded_video"
+    folder_name = "./file/uploded_video"
     filename = folder_name + "\\" + video_name
     # filename = video_name
     with open(filename, "wb") as ff:

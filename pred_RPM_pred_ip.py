@@ -15,13 +15,13 @@ def root_mean_squared_error(y_true, y_pred):
 
 def pred():
     print("pred start...")
-    #model = tf.keras.models.load_model(r'C:\Users\maxchen\Desktop\Project\code\RPM_ckpt/bin_RPM_resN_5fold_BN_norm_test2_0055-0.595.h5',custom_objects={'root_mean_squared_error': root_mean_squared_error})
-    model = load_model(r'C:\Users\Ricky\PycharmProjects\server\h5\10_175fps_2022_09_07_train0_rmse.h5' ,custom_objects={'root_mean_squared_error': root_mean_squared_error})
+    # model = load_model(r'C:\Users\Ricky\PycharmProjects\server\h5\10_175fps_2022_09_07_train0_rmse.h5' ,custom_objects={'root_mean_squared_error': root_mean_squared_error})
+    model = load_model('./model/spinrate__240FPS.ckpt' ,custom_objects={'root_mean_squared_error': root_mean_squared_error})
 
     #model.load_weights(r'C:\Users\maxchen\Desktop\Project\code\RPM_h5\RPM_resN_5fold.h5')
     #df = pd.read_csv(r'D:\Model_data\processed\csv\RPM.csv')
     model.summary()
-    df = pd.read_csv(r'C:\Users\Ricky\PycharmProjects\server\file\csv\origin.csv')
+    df = pd.read_csv('./file/csv/origin.csv')
     #print(df.iloc[0][1])
 
     test_predict = []
@@ -54,7 +54,7 @@ def pred():
         #print(test_predict[i][0][0])
 
     df["pred"] = test_predict_temp
-    df.to_csv(r'C:\Users\Ricky\PycharmProjects\server\file\csv\result.csv')
+    df.to_csv('./file/csv/result.csv')
     res = df["pred"].mean()
     print("pred_result:",res)
 

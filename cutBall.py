@@ -5,7 +5,7 @@ from model import ballLineModel
 def cutball(video_path):
     os.environ["CUDA_VISIBLE_DEVICES"] = ""
     #存影片資料夾的位置
-    tk_path = r'C:\Users\Ricky\PycharmProjects\server\file/'
+    tk_path = './file/'
     #資料夾名稱
     date = "uploded_video"
     lineball_path = []
@@ -16,7 +16,7 @@ def cutball(video_path):
 
     # videoids = os.listdir(video_path)
 
-    ballline_ckptpath = r'C:\Users\Ricky\PycharmProjects\server\file\finetune_0510_300300.h5'
+    ballline_ckptpath = './file/finetune_0510_300300.h5'
     true_ball_to_line_model = ballLineModel()
     true_ball_to_line_model.load_weights(ballline_ckptpath)
 
@@ -27,7 +27,7 @@ def cutball(video_path):
     #         videoids.remove(i)
 
     # for videoid in videoids:
-    videoid = (video_path.split("\\")[-1]).split(".")[0]
+    videoid = (video_path.split("/")[-1]).split(".")[0]
     print("video id:",videoid)
     #     video_name = tk_path + date + "\\" + videoid
     video_name = video_path
