@@ -58,29 +58,21 @@ def blob(video_name, outputDir):
     frame_record_counter = 0
     velo = 0
 
-    while (ret):
+    while (ret and (frame_count >100 and frame_count<400) ):
         ret, frame = cap.read()
         frame_count += 1
-        # if frame_count > 220:
-        #     cv2.imshow('frame', frame)
 
         # if frame_count > 250: #timestemps only got 250
         #     break
         if ret:
             try:
                 fgmask = mog.apply(frame)
-                # if frame_count > 220:
-                #     cv2.imshow('fmask',fgmask)
                 blur = cv2.GaussianBlur(fgmask, (15, 15), 0)
-                th = cv2.threshold(blur, 30, 255, cv2.THRESH_BINARY)[1]
-                # if frame_count > 220:
-                #     cv2.imshow('th', blur)
+                th = cv2.threshold(blur, 60, 255, cv2.THRESH_BINARY)[1]
                 opening = cv2.morphologyEx(th, cv2.MORPH_OPEN, es, iterations=1)
 
-                if frame_count > 42:
-                    tm1 = cv2.resize(opening, (720, 540), interpolation=cv2.INTER_CUBIC)
+                if frame_count > 100 and frame_count < 400:
                     params = cv2.SimpleBlobDetector_Params()  #
-
                     params.filterByArea = True
                     params.minArea = 300
                     params.blobColor = 255
@@ -102,31 +94,23 @@ def blob(video_name, outputDir):
                         x_mark = []
                         y_mark = []
                         try:  # multi keypoints
-                            # print('frame' , frame_count)
-
                             for keyPoint in keypoints:
                                 x = keyPoint.pt
                                 # print("x y: ", x[0],x[1])
                                 (cx, cy) = x[0], x[1]  # x,y坐標
-                                if (int(x[0]) > 830 and int(x[0]) < 1920) and (int(x[1]) > 0 and int(x[1]) < 540):
+                                if (int(x[0]) > 960 and int(x[0]) < 1920) and (int(x[1]) > 0 and int(x[1]) <700):
                                     # print("x y: ", cx, cy)
                                     frame_record.append(frame_count)  # 記錄可使用的frame
-                                    cv2.rectangle(blobs, (830, 0), (1920, 540), (0, 0, 255), 3, cv2.LINE_AA)
+                                    cv2.rectangle(frame, (960, 0), (1920, 700), (0, 0, 255), 3, cv2.LINE_AA)
                                     cv2.circle(blobs, (int(x[0]), int(x[1])), radius=1, color=(0, 0, 255),
                                                thickness=-1)
-                                    # resieze = cv2.resize(blobs,(720,540),interpolation=cv2.INTER_CUBIC)
-                                    # cv2.imshow("Blobs Using Area", blobs)
-
                                     veloCount += 1
 
                                     if (frame_record_counter == 0):
                                         lastCenter = (cx, cy)
-                                        # print('INSIDE', frame_count ,frame_record_counter)
                                         frame_record_counter = frame_record_counter + 1
 
                                     else:
-                                        # print(frame_record)
-                                        # print(frame_record[frame_record_counter])
 
                                         if frame_record[frame_record_counter] - frame_record[
                                             frame_record_counter - 1] == 1:
@@ -141,20 +125,13 @@ def blob(video_name, outputDir):
                                             #         else:
                                             #             frame_rate = 0
                                             #
-                                            velo = 3600 * (240) * dist / (1000 * pixelToMeter)
+                                            velo = 3600 * (220) * dist / (1000 * pixelToMeter)
                                             # print(velo)
                                             if velo > 60 and velo < 160:
                                                 tmpVelo.append(velo)
                                         else:
                                             frame_record_counter = frame_record_counter + 1
 
-                                    # print('frame_rate:',frame_rate)
-                                    #
-                                    # last_timestamp = int(timestamp[frame_count])
-                                    #
-
-                                    #
-                                    # print("veloCount, velo: ", veloCount, velo)
                                     lastCenter = (cx, cy)
                                     if len(tmpVelo) >= 2:
                                         totalVelo = 0
