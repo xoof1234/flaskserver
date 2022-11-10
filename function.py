@@ -31,10 +31,10 @@ def cutframe_iphone(video_name):
     # cap.set(cv2.CAP_PROP_FRAME_WIDTH, 720)
     # cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 540)
     #開始幀數
-    cap.set(cv2.CAP_PROP_POS_FRAMES, 0)
+    cap.set(cv2.CAP_PROP_POS_FRAMES, 260)
     frame_count = 0
     img_count = 0
-    while (1):
+    while len(ball_frames)<30:
 
         ret, frame = cap.read()
 
@@ -58,7 +58,7 @@ def cutframe_iphone(video_name):
                     ROI_xright = 1600
                     ROI_ytop = 400
                     ROI_ydown = 800
-                    cv2.rectangle(frame,(ROI_xleft,ROI_ytop),(ROI_xright,ROI_ydown),(0,255,0),2)
+                    # cv2.rectangle(frame,(ROI_xleft,ROI_ytop),(ROI_xright,ROI_ydown),(0,255,0),2)
                     #面積
                     if (cv2.contourArea(c) < 1800 and (cv2.contourArea(c) > 270)):
 
