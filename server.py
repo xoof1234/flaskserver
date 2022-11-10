@@ -1,6 +1,6 @@
 import os
 import urllib.request
-from flask import Flask, flash, request, redirect, url_for, render_template, jsonify
+from flask import Flask, flash, request, redirect, url_for, render_template, jsonify, send_file, make_response
 from werkzeug.utils import secure_filename
 from function import *
 from model import ballLineModel
@@ -170,6 +170,16 @@ def video_encode(video_path):
 def upload_form():
     return render_template('upload.html')
 
+MEDIA_PATH = './file/uploded_video'
+
+
+@app.route('/<vid_name>')
+def serve_video(vid_name):
+    vid_path = os.path.join(MEDIA_PATH, vid_name)
+    resp = make_response(send_file(vid_path, 'video/mp4'))
+    resp.headers['Content-Disposition'] = 'inline'
+    return resp
+
 
 @app.route('/spinrate', methods=['POST'])
 def spinrate():
@@ -260,35 +270,37 @@ def ballspeed():
     cal_path = "./file/cal_video/" + ballspeed_video_name
     print("cal_path: ", cal_path)
 
-    criteria = (cv2.TERM_CRITERIA_EPS + cv2.TERM_CRITERIA_MAX_ITER, 30, 0.001)
-    objp = np.zeros((4*4, 3), np.float32)
-    objp[:,:2] = np.mgrid[0:4, 0:4].T.reshape(-1,2)
-
-    objpoints = []
-    imgpoints = []
+    # criteria = (cv2.TERM_CRITERIA_EPS + cv2.TERM_CRITERIA_MAX_ITER, 30, 0.001)
+    # objp = np.zeros((4*4, 3), np.float32)
+    # objp[:,:2] = np.mgrid[0:4, 0:4].T.reshape(-1,2)
     #
+    # objpoints = []
+    # imgpoints = []
+    # #
+    # #
+    # images = glob.glob('file/chessboard/*.png')
+    # #
+    # for fname in images:
+    #     img = cv2.imread(fname)
+    #     img = cv2.resize(img, (1920, 1080))
+    #     gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
     #
-    images = glob.glob('file/chessboard/*.png')
+    #     ret, corners = cv2.findChessboardCorners(gray, (4,4), None)
     #
-    for fname in images:
-        img = cv2.imread(fname)
-        img = cv2.resize(img, (1920, 1080))
-        gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-
-        ret, corners = cv2.findChessboardCorners(gray, (4,4), None)
-
-        if ret == True:
-            objpoints.append(objp)
-            corners2 = cv2.cornerSubPix(gray, corners, (5, 5), (-1, -1), criteria)
-            imgpoints.append(corners)
-            cv2.drawChessboardCorners(img, (4,4), corners2, ret)
-        # cv2.imshow('frame', img)
-        if cv2.waitKey(0) == 27:
-            break
-
-    ret, mtx, dist, rvecs, tvecs = cv2.calibrateCamera(objpoints, imgpoints, gray.shape[::-1], None, None)
-    print("mtx:", mtx)
-    print("dist:", dist)
+    #     if ret == True:
+    #         objpoints.append(objp)
+    #         corners2 = cv2.cornerSubPix(gray, corners, (5, 5), (-1, -1), criteria)
+    #         imgpoints.append(corners)
+    #         cv2.drawChessboardCorners(img, (4,4), corners2, ret)
+    #     # cv2.imshow('frame', img)
+    #     if cv2.waitKey(0) == 27:
+    #         break
+    #
+    # ret, mtx, dist, rvecs, tvecs = cv2.calibrateCamera(objpoints, imgpoints, gray.shape[::-1], None, None)
+    mtx = [[4600.98769128, 0, 961.17445224], [0, 4574.72596027, 537.80462204], [0, 0, 1]]
+    dist = [[0.84660277, -15.05073586, 0.06927329, 0.04566403, 105.27604409]]
+    mtx = np.asarray(mtx)
+    dist = np.asarray(dist)
     undistortion(mtx, dist,video_path)
 
 
