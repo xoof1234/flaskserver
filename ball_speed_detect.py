@@ -25,7 +25,7 @@ def blob(video_name, outputDir):
     history = 8
     varThreshold = 100
     bShadowDetection = True
-    pixelToMeter = 244.57
+    pixelToMeter = 394.44
     fourcc = cv2.VideoWriter_fourcc(*'mp4v')
     fname = video_name.split('\\')[-1]
     fname = fname.split('.')[0]
@@ -58,20 +58,20 @@ def blob(video_name, outputDir):
     frame_record_counter = 0
     velo = 0
 
-    while (ret and (frame_count >100 and frame_count<400) ):
+    while (ret  ):
         ret, frame = cap.read()
         frame_count += 1
 
         # if frame_count > 250: #timestemps only got 250
         #     break
-        if ret:
+        if ret and (frame_count >20 and frame_count<200):
             try:
                 fgmask = mog.apply(frame)
                 blur = cv2.GaussianBlur(fgmask, (15, 15), 0)
                 th = cv2.threshold(blur, 60, 255, cv2.THRESH_BINARY)[1]
                 opening = cv2.morphologyEx(th, cv2.MORPH_OPEN, es, iterations=1)
 
-                if frame_count > 100 and frame_count < 400:
+                if frame_count > 20 and frame_count < 200:
                     params = cv2.SimpleBlobDetector_Params()  #
                     params.filterByArea = True
                     params.minArea = 300
