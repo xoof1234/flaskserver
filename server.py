@@ -308,6 +308,8 @@ def ballspeed():
     # emptydir('output')
     cal_path = "./file/cal_video/" + ballspeed_video_name
     print("cal_path: ", cal_path)
+    time_front = time.time()
+    print('processing recive time:', time_front - time_start, 's')
 
     # criteria = (cv2.TERM_CRITERIA_EPS + cv2.TERM_CRITERIA_MAX_ITER, 30, 0.001)
     # objp = np.zeros((4*4, 3), np.float32)
@@ -341,6 +343,8 @@ def ballspeed():
     mtx = np.asarray(mtx)
     dist = np.asarray(dist)
     undistortion(mtx, dist,video_path)
+    time_mid = time.time()
+    print('processing remake video time:', time_mid - time_start, 's')
 
 
     ball_speed = blob(cal_path,'outputMP4')
