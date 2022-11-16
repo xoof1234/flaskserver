@@ -60,17 +60,19 @@ def cutball(video_path):
 
     ball_frames,ball_frame_names = cutframe_iphone(video_name)
 
-    # create_folder(tk_path + '{}_ball/{}/'.format(date,videoid))
-    # create_folder(tk_path + '{}_video_frame/{}/'.format(date,videoid))
-    # for i in range(len(ball_frames)):
+    if DEBUG:
+        create_folder(tk_path + '{}_ball/{}/'.format(date,videoid))
+        # create_folder(tk_path + '{}_video_frame/{}/'.format(date,videoid))
 
-    #     filename = tk_path + '{}_ball/{}/'.format(date,videoid) + str(ball_frame_names[i]) + '.png'
+        for i in range(len(ball_frames)):
 
-    #     # image1 = cv2.imread('./file/standard_ball/296.png')
-    #     # similiarity = calculate(image1, ball_frames[i])
+            filename = tk_path + '{}_ball/{}/'.format(date,videoid) + str(ball_frame_names[i]) + '.png'
 
-    #     # if similiarity>THRESHOLD:
-    #     cv2.imwrite(filename,ball_frames[i])
+            # image1 = cv2.imread('./file/standard_ball/296.png')
+            # similiarity = calculate(image1, ball_frames[i])
+
+            # if similiarity>THRESHOLD:
+            cv2.imwrite(filename,ball_frames[i])
     # # for i in range(len(video_frames)):
 
     # #     filename = tk_path + '{}_video_frame/{}/'.format(date,videoid) +str(i) + '.png'
