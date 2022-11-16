@@ -60,6 +60,7 @@ def cutball(video_path):
 
     ball_frames,ball_frame_names = cutframe_iphone(video_name)
 
+    # DEBUG
     if DEBUG:
         create_folder(tk_path + '{}_ball/{}/'.format(date,videoid))
         # create_folder(tk_path + '{}_video_frame/{}/'.format(date,videoid))
