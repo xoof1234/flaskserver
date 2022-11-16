@@ -15,7 +15,7 @@ def root_mean_squared_error(y_true, y_pred):
 
 model = load_model('./model/spinrate__240FPS.ckpt' ,custom_objects={'root_mean_squared_error': root_mean_squared_error})
 
-def pred():
+def pred(formed_df):
     print("pred start...")
     # model = load_model(r'C:\Users\Ricky\PycharmProjects\server\h5\10_175fps_2022_09_07_train0_rmse.h5' ,custom_objects={'root_mean_squared_error': root_mean_squared_error})
     # model = load_model('./model/spinrate__240FPS.ckpt' ,custom_objects={'root_mean_squared_error': root_mean_squared_error})
@@ -23,7 +23,8 @@ def pred():
     #model.load_weights(r'C:\Users\maxchen\Desktop\Project\code\RPM_h5\RPM_resN_5fold.h5')
     #df = pd.read_csv(r'D:\Model_data\processed\csv\RPM.csv')
     # model.summary()
-    df = pd.read_csv('./file/csv/origin.csv')
+    # df = pd.read_csv('./file/csv/origin.csv')
+    df = formed_df.copy()
     #print(df.iloc[0][1])
 
     test_predict = []
@@ -35,15 +36,19 @@ def pred():
   
     for i in range(int(len(df))):
         inputs = []
-        for j in range(1,6):
-            path = df.iloc[i][j]
+        for j in range(0,5):
+            # path = df.iloc[i][j]
+            pic = df.iloc[i][j]
+            print("pic:",pic.shape,i,j)
             if (Count == 0):
-                Img1 = cv2.imread(path)
+                # Img1 = cv2.imread(path)
+                Img1 = pic
                 resImg1 = cv2.resize(Img1, (48,48))
 
                 Img = resImg1
             else:
-                Img1 = cv2.imread(path)
+                # Img1 = cv2.imread(path)
+                Img1 = pic
                 resImg1 = cv2.resize(Img1, (48,48))
                 Img = np.concatenate((Img, resImg1), -1)
             Count += 1

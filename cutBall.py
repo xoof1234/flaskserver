@@ -5,6 +5,7 @@ import time
 
 # 用于判断是否是球的threshold
 THRESHOLD=0.5
+DEBUG = False
 
 ballline_ckptpath = './file/finetune_0510_300300.h5'
 true_ball_to_line_model = ballLineModel()
@@ -76,7 +77,8 @@ def cutball(video_path):
     # #     cv2.imwrite(filename,video_frames[i])
 
     ball_to_line_img = []
-    # create_folder(tk_path + '{}_ball_line/{}/'.format(date,videoid))
+    if DEBUG:
+        create_folder(tk_path + '{}_ball_line/{}/'.format(date,videoid))
 
     true_ball_to_line_pred = true_ball_to_line_model.predict(ball_frames / 255.0) * 255.0
     # array_img = tf.keras.preprocessing.image.array_to_img((true_ball_to_line_pred.astype(np.uint8)))
@@ -84,10 +86,16 @@ def cutball(video_path):
     ball_to_line_img = [cv2.cvtColor(img, cv2.COLOR_RGB2BGR) \
         for img in true_ball_to_line_pred.astype(np.uint8)]
 
-    # for i in range(len(ball_to_line_img)):
-    #     #filename = tk_path + '{}_ball_line/{}_cam_7_{}/'.format(date,tk_date,videoids) +str(ball_frame_name[i]) + '.jpg'
-    #     filename = tk_path + '{}_ball_line/{}/'.format(date,videoid) + str(ball_frame_names[i]) + '.png'
-    #     lineball_path = tk_path + '{}_ball_line/{}'.format(date,videoid)
-    #     cv2.imwrite(filename,ball_to_line_img[i])
+    print("size:",len(ball_to_line_img))
+    print("type:",type(ball_to_line_img))
+    print("ball_frame_names:",ball_frame_names)
 
-    return lineball_path
+    if DEBUG:
+        for i in range(len(ball_to_line_img)):
+            #filename = tk_path + '{}_ball_line/{}_cam_7_{}/'.format(date,tk_date,videoids) +str(ball_frame_name[i]) + '.jpg'
+            filename = tk_path + '{}_ball_line/{}/'.format(date,videoid) + str(ball_frame_names[i]) + '.png'
+            lineball_path = tk_path + '{}_ball_line/{}'.format(date,videoid)
+            cv2.imwrite(filename,ball_to_line_img[i])
+
+    # return lineball_path
+    return ball_to_line_img,ball_frame_names
