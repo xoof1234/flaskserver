@@ -5,7 +5,7 @@ import time
 
 # 用于判断是否是球的threshold
 THRESHOLD=0.5
-DEBUG = False
+DEBUG = 0
 
 ballline_ckptpath = './file/finetune_0510_300300.h5'
 true_ball_to_line_model = ballLineModel()
