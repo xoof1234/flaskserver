@@ -266,7 +266,7 @@ def spinrate():
     #     # print(request.data)
     #     flash('No file part')
     #     return redirect(request.url)
-    #
+    
     # file = request.files['file']
     # if file.filename == '':
     #     flash('No image selected for uploading')
@@ -280,6 +280,29 @@ def spinrate():
     #     print('upload_video filename: ' + filename)
     #     flash('Video successfully uploaded and displayed below')
     #     return render_template('upload.html', filename=filename)
+
+@app.route('/testurl',methods=['POST'])
+def testurl():
+    print('testurl start')
+    if 'file' not in request.files:
+        print(request.files)
+        # print(request.data)
+        print('No file part')
+        return redirect(request.url)
+    
+    file = request.files['file']
+    if file.filename == '':
+        print('No image selected for uploading')
+        return redirect(request.url)
+    else:
+        print(request.files)
+        # print(request.data)
+        filename = secure_filename(file.filename)
+        print(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+        file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+        print('upload_video filename: ' + filename)
+        print('Video successfully uploaded and displayed below')
+        return render_template('upload.html', filename=filename)
 
 @app.route('/ballspeed', methods=['POST'])
 def ballspeed():

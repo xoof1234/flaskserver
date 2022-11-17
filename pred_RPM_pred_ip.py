@@ -39,7 +39,7 @@ def pred(formed_df):
         for j in range(0,5):
             # path = df.iloc[i][j]
             pic = df.iloc[i][j]
-            print("pic:",pic.shape,i,j)
+            # print("pic:",pic.shape,i,j)
             if (Count == 0):
                 # Img1 = cv2.imread(path)
                 Img1 = pic
