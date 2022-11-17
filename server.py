@@ -210,12 +210,12 @@ def upload_form():
 MEDIA_PATH = './file/uploded_video'
 
 
-@app.route('/<vid_name>')
-def serve_video(vid_name):
-    vid_path = os.path.join(MEDIA_PATH, vid_name)
-    resp = make_response(send_file(vid_path, 'video/mp4'))
-    resp.headers['Content-Disposition'] = 'inline'
-    return resp
+# @app.route('/<vid_name>')
+# def serve_video(vid_name):
+#     vid_path = os.path.join(MEDIA_PATH, vid_name)
+#     resp = make_response(send_file(vid_path, 'video/mp4'))
+#     resp.headers['Content-Disposition'] = 'inline'
+#     return resp
 
 
 @app.route('/spinrate', methods=['POST'])
@@ -313,7 +313,6 @@ def ballspeed():
             video_name = str(v)
         if str(k) == 'content':
             contents = bytes(str(v), encoding = "utf8")
-
     videoData = pybase64.b64decode(contents)
     folder_name = "./file/uploded_video"
     filename = folder_name + "\\" + video_name
