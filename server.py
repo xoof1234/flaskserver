@@ -375,6 +375,21 @@ def ballspeed():
 # #   }
 # #   stores.append(new_store)
 # #   return jsonify(new_store)
+@app.route("/upload", methods=["POST"])
+def upload():
+    time_start = time.time()
+    print("**")
+    print("uploading data...")
+    print("server accept mime: ", request.accept_mimetypes) #/*
+    print("client send mime: ", request.mimetype) # video/quicktime
+    print("data %d bytes".format(len(request.data)))
+    with open('output.mov', 'wb') as f:
+        f.write(request.data)
+        f.close()
+    time_end = time.time()
+    print('processing time:', time_end - time_start, 's')
+
+    return "oh yeah"
 
 
 if __name__ == "__main__":
