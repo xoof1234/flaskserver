@@ -17,10 +17,10 @@ import glob
 from calibration import undistortion
 import pandas as pd
 
-UPLOAD_FOLDER = './static'
+UPLOAD_FOLDER = './file/uploded_video'
 app = Flask(__name__)
-app.secret_key = "secret key"
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+app.secret_key = 'asdsadasd'
 # app.config['MAX_CONTENT_LENGTH'] = 100 * 1024 * 1024
 # path = 'C://Users//Ricky//PycharmProjects//server//file//uploded_video//t.txt'
 
@@ -222,27 +222,29 @@ MEDIA_PATH = './file/uploded_video'
 def spinrate():
     time_start = time.time()
 
-    for k, v in request.json.items():
-        if str(k) == 'video':
-            video_name = str(v)
-        if str(k) == 'content':
-            contents = bytes(str(v), encoding = "utf8")
+    if 'file' not in request.files:
+        print(request.files)
+        # print(request.data)
+        print('No file part')
+        return redirect(request.url)
 
-    videoData = pybase64.b64decode(contents)
-    folder_name = "./file/uploded_video"
-    filename = folder_name + "\\" + video_name
+    file = request.files['file']
+    if file.filename == '':
+        print('No image selected for uploading')
+        return redirect(request.url)
+    else:
+        print(request.files)
+        # print(request.data)
+        filename = secure_filename(file.filename)
+        video_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+        file.save(video_path)
+        print('upload_video filename: ' + filename)
 
-    with open(filename, "wb") as ff:
-        ff.write(videoData)
-    print('video done')
-    ff.close()
-
-    video_path = filename
     # print("video_path:",video_path)
     
     if DO_BODY_DETECT:
-        gen_pitcherholistic_frames(video_name,filename)
-        frames2video(video_name,filename)
+        gen_pitcherholistic_frames(filename,filename)
+        frames2video(filename,filename)
         video_return_str = video_encode('file/return/video_return.avi')
 
     ball_to_line_img,ball_frame_names = cutball(video_path)
@@ -281,15 +283,17 @@ def spinrate():
     #     flash('Video successfully uploaded and displayed below')
     #     return render_template('upload.html', filename=filename)
 
-@app.route('/testurl',methods=['POST'])
-def testurl():
-    print('testurl start')
+
+@app.route('/ballspeed', methods=['POST'])
+def ballspeed():
+    time_start = time.time()
+    print(request.files)
     if 'file' not in request.files:
         print(request.files)
         # print(request.data)
         print('No file part')
         return redirect(request.url)
-    
+
     file = request.files['file']
     if file.filename == '':
         print('No image selected for uploading')
@@ -298,68 +302,19 @@ def testurl():
         print(request.files)
         # print(request.data)
         filename = secure_filename(file.filename)
-        print(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-        file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+        video_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+        file.save(video_path)
         print('upload_video filename: ' + filename)
-        print('Video successfully uploaded and displayed below')
-        return render_template('upload.html', filename=filename)
 
-@app.route('/ballspeed', methods=['POST'])
-def ballspeed():
-    time_start = time.time()
-
-    for k, v in request.json.items():
-        if str(k) == 'video':
-            video_name = str(v)
-        if str(k) == 'content':
-            contents = bytes(str(v), encoding = "utf8")
-    videoData = pybase64.b64decode(contents)
-    folder_name = "./file/uploded_video"
-    filename = folder_name + "\\" + video_name
-    # filename = video_name
-    with open(filename, "wb") as ff:
-        ff.write(videoData)
-    print('video done')
-    ff.close()
-
-    video_path = filename
     print("video_path:",video_path) #C:\Users\Ricky\PycharmProjects\server\file\uploded_video\output_20221109142508.mov
-    ballspeed_video_name = video_path.split('\\')[-1]
-    print("ballspeed_video_name:",ballspeed_video_name)
+    print("filename:",filename)
 
     # emptydir('output')
-    cal_path = "./file/cal_video/" + ballspeed_video_name
+    cal_path = "./file/cal_video/" + filename
     print("cal_path: ", cal_path)
     time_front = time.time()
     print('processing recive time:', time_front - time_start, 's')
 
-    # criteria = (cv2.TERM_CRITERIA_EPS + cv2.TERM_CRITERIA_MAX_ITER, 30, 0.001)
-    # objp = np.zeros((4*4, 3), np.float32)
-    # objp[:,:2] = np.mgrid[0:4, 0:4].T.reshape(-1,2)
-    #
-    # objpoints = []
-    # imgpoints = []
-    # #
-    # #
-    # images = glob.glob('file/chessboard/*.png')
-    # #
-    # for fname in images:
-    #     img = cv2.imread(fname)
-    #     img = cv2.resize(img, (1920, 1080))
-    #     gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-    #
-    #     ret, corners = cv2.findChessboardCorners(gray, (4,4), None)
-    #
-    #     if ret == True:
-    #         objpoints.append(objp)
-    #         corners2 = cv2.cornerSubPix(gray, corners, (5, 5), (-1, -1), criteria)
-    #         imgpoints.append(corners)
-    #         cv2.drawChessboardCorners(img, (4,4), corners2, ret)
-    #     # cv2.imshow('frame', img)
-    #     if cv2.waitKey(0) == 27:
-    #         break
-    #
-    # ret, mtx, dist, rvecs, tvecs = cv2.calibrateCamera(objpoints, imgpoints, gray.shape[::-1], None, None)
     mtx = [[4600.98769128, 0, 961.17445224], [0, 4574.72596027, 537.80462204], [0, 0, 1]]
     dist = [[0.84660277, -15.05073586, 0.06927329, 0.04566403, 105.27604409]]
     mtx = np.asarray(mtx)
@@ -372,8 +327,8 @@ def ballspeed():
     ball_speed = blob(cal_path,'outputMP4')
     
     if DO_BODY_DETECT:
-        gen_pitcherholistic_frames(video_name,filename)
-        frames2video(video_name,filename)
+        gen_pitcherholistic_frames(filename,filename)
+        frames2video(filename,filename)
         video_return_str = video_encode('file/return/video_return.avi')
 
     print('ball_speed:',ball_speed)
