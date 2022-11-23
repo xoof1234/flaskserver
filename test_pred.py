@@ -3,7 +3,7 @@ from function import *
 from cutBall import cutball
 from pred_gettargetcsv_RPM import getcsv
 from pred_RPM_pred_ip import pred
-import time
+from time import perf_counter
 import pandas as pd
 
 def get_dataframe(ball_to_line_img, ball_frame_names):
@@ -41,14 +41,14 @@ def get_dataframe(ball_to_line_img, ball_frame_names):
     # df["Norm_spinrate_minus"] = minus_Norm_spinrate_list
     return df
 
-video_name = 'output_20221109163418.mov'
-video_path = './test_file_src/'+ video_name
+video_name = 'ex_spinrate.mov'
+video_path = './test_file_src/ex/'+ video_name
 
-time_start = time.time()
+time_start = perf_counter()
 
 ball_to_line_img,ball_frame_names = cutball(video_path)
 
-time_end = time.time()
+time_end = perf_counter()
 print('processing time', time_end - time_start, 's')
 
 df = get_dataframe(ball_to_line_img, ball_frame_names)

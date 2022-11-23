@@ -268,7 +268,7 @@ def spinrate():
     #     # print(request.data)
     #     flash('No file part')
     #     return redirect(request.url)
-    #
+    
     # file = request.files['file']
     # if file.filename == '':
     #     flash('No image selected for uploading')
