@@ -14,7 +14,7 @@ mp_holistic = mp.solutions.holistic
 IMAGE_FILES = []
 # vedio
 # cap = cv2.VideoCapture(r'C:\Users\samel\Downloads\drive-download-20220627T032831Z-001\cam_45024576_1_PX_V6.avi')
-cap = cv2.VideoCapture('D:\\My_Files\\zly_python_file\\baseball\\python\\flaskserver\\test_file_src\\output_20221109165844.mov')
+cap = cv2.VideoCapture('C:\\Users\\Ricky\\PycharmProjects\\server\\test_file_src\\output.mov')
 
 frame_index = 0
 frame_count = 0 # frame_index / interval
@@ -43,11 +43,11 @@ with mp_holistic.Holistic(
         # image.flags.writeable = False
         # image = cv2.cvtColor(image,cv2.COLOR_BGR2RGB)
         # print("Frame count", frame_index)
-        if frame_index%1==0 and frame_index>50 and frame_index<300:
+        if frame_index%1==0 and frame_index>1 and frame_index<300:
             results = holistic.process(image)
         elif frame_index==0:
             results = holistic.process(image)
-        if frame_index>50 and frame_index<300:
+        if frame_index>1 and frame_index<300:
             mp_drawing.draw_landmarks(
                 image,
                 results.pose_landmarks,
@@ -66,7 +66,7 @@ with mp_holistic.Holistic(
     # 子執行緒的工作函數
     def job():
         frameSize = (1920, 1080)
-        out = cv2.VideoWriter('D:\\My_Files\\zly_python_file\\baseball\\python\\flaskserver\\test_file_src\\ex_ballspeed.mp4',cv2.VideoWriter_fourcc(*'DIVX'), 60, frameSize)
+        out = cv2.VideoWriter('C:\\Users\\Ricky\\PycharmProjects\\server\\test_file_src\\ex_ballspeed222.mp4',cv2.VideoWriter_fourcc(*'DIVX'), 30, frameSize)
         for img in IMAGE_FILES:
             out.write(img)
         out.release()

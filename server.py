@@ -16,6 +16,7 @@ import cv2
 import glob
 from calibration import undistortion
 import pandas as pd
+import tempfile
 
 UPLOAD_FOLDER = './file/uploded_video'
 app = Flask(__name__)
@@ -382,14 +383,44 @@ def upload():
     print("uploading data...")
     print("server accept mime: ", request.accept_mimetypes) #/*
     print("client send mime: ", request.mimetype) # video/quicktime
-    print("data %d bytes".format(len(request.data)))
+    print("data {} bytes".format(len(request.data)))
+    print(type(request.data))
+
+    # # video_stream = None
+    # count = 0
+    # with tempfile.NamedTemporaryFile() as temp:
+    #     temp.write(request.data)
+    #     print(temp.tell())
+    #     temp.seek(0)
+    #     print(temp.read(2))
+    #     print(temp.name)
+    #     video_stream = cv2.VideoCapture(temp.name)
+    #     while count < 5:
+    #         ret, frame = video_stream.read()
+    #         print('count:', count)
+    #         print('type:', type(frame))
+    #         print('ret:', ret)
+    #         count += 1
+    #     # cv2.imshow('frame', frame)
+    #     # cv2.waitKey(1)
+    #
+    # time_end = time.time()
+    # print('processing time:', time_end - time_start, 's')
+    #
+    # # ret, frame = video_stream.read()
+    # # cv2.imshow('frame', frame)
+    # # cv2.waitKey(1)
+
     with open('output.mov', 'wb') as f:
         f.write(request.data)
         f.close()
-    time_end = time.time()
-    print('processing time:', time_end - time_start, 's')
 
-    return "oh yeah"
+    spinrate = 1832.6
+    ballspeed = 92.4
+    data_return = {"RPM": int(spinrate)}
+
+    time.sleep(5)
+    return jsonify(data_return)
 
 
 if __name__ == "__main__":
