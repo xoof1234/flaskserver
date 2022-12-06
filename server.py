@@ -225,25 +225,41 @@ def serve_video(vid_name):
 
 @app.route('/spinrate', methods=['POST'])
 def spinrate():
-    time_start = time.time()
+    time1 = time.perf_counter()
 
-    if 'file' not in request.files:
-        print(request.files)
-        # print(request.data)
-        print('No file part')
-        return redirect(request.url)
+    # print("server accept mime: ", request.accept_mimetypes)  # /*
+    # print("client send mime: ", request.mimetype)  # video/quicktime
+    print("data {} bytes".format(len(request.data)))
+    # print(type(request.data))
+    filename = 'video1.mov'
+    video_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
 
-    file = request.files['file']
-    if file.filename == '':
-        print('No image selected for uploading')
-        return redirect(request.url)
-    else:
-        print(request.files)
-        # print(request.data)
-        filename = secure_filename(file.filename)
-        video_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
-        file.save(video_path)
-        print('upload_video filename: ' + filename)
+    time2 = time.perf_counter()
+    print('recieving time:', time2-time1, 's')
+
+    with open(video_path, 'wb') as f:
+        f.write(request.data)
+    time3 = time.perf_counter()
+    print('writting time:', time3-time2, 's')
+
+
+    # if 'file' not in request.files:
+    #     print(request.files)
+    #     # print(request.data)
+    #     print('No file part')
+    #     return redirect(request.url)
+
+    # file = request.files['file']
+    # if file.filename == '':
+    #     print('No image selected for uploading')
+    #     return redirect(request.url)
+    # else:
+    #     print(request.files)
+    #     # print(request.data)
+    #     filename = secure_filename(file.filename)
+    #     video_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+    #     file.save(video_path)
+    #     print('upload_video filename: ' + filename)
 
     # print("video_path:",video_path)
 
@@ -259,11 +275,11 @@ def spinrate():
     # getcsv(lineball_path)
     # pred_spinrate = pred()
 
-    # data_return = {"RPM":int(pred_spinrate),"video_data": video_return_str}
     data_return = {"RPM": int(pred_spinrate)}
 
-    time_end = time.time()
-    print('processing time', time_end - time_start, 's')
+    time4 = time.perf_counter()
+    print('processing time', time4 - time3, 's')
+    print('total time', time4 - time1, 's')
 
     return jsonify(data_return)
 

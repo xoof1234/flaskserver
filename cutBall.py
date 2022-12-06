@@ -7,7 +7,7 @@ import time
 THRESHOLD=0.5
 DEBUG = 0
 
-ballline_ckptpath = './file/finetune_0510_300300.h5'
+ballline_ckptpath = './model/finetune_09_28_dark.h5'
 true_ball_to_line_model = ballLineModel()
 true_ball_to_line_model.load_weights(ballline_ckptpath)
 

@@ -103,7 +103,6 @@ def cutframe_iphone(video_name):
     return np.array(ball_frames),ball_frame_names
 
 
-
 def cutframe_cam(video_name):
     ball_frames = []
     video_frame = []
@@ -199,9 +198,6 @@ def cutframe_cam(video_name):
     return np.array(video_frame),np.array(ball_frames),ball_frame_names
 
 
-
-
-
 def modify_lightness_saturation(img):
     f_Img = img.astype(np.float32)
     f_Img = f_Img / 255.0
@@ -223,7 +219,6 @@ def modify_lightness_saturation(img):
 
 
     return result_img
-
 
 
 def root_mean_squared_error(y_true, y_pred):
@@ -311,7 +306,6 @@ def cutframe_th(video_name):
     cap.release()
 
     return np.array(video_frame),np.array(ball_frames),loss_frame
-
 
 
 if __name__ == '__main__':
