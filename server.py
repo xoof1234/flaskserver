@@ -1,22 +1,16 @@
-import os
-import urllib.request
-from flask import Flask, flash, request, redirect, url_for, render_template, jsonify, send_file, make_response
-from werkzeug.utils import secure_filename
-from function import *
-from model import ballLineModel
-from cutBall import cutball
-from ball_speed_detect import blob,emptydir
-from pred_gettargetcsv_RPM import getcsv
-from pred_RPM_pred_ip import pred
-import pybase64
 import time
+
 import mediapipe as mp
-import numpy as np
-import cv2
-import glob
-from calibration import undistortion
 import pandas as pd
-import tempfile
+import pybase64
+from flask import Flask, request, redirect, render_template, jsonify, send_file, make_response
+from werkzeug.utils import secure_filename
+
+from ball_speed_detect import blob,blob2,calc_ball_speed
+from calibration import undistortion
+from cutBall import cutball
+from function import *
+from pred_RPM_pred_ip import pred
 
 UPLOAD_FOLDER = './file/uploded_video'
 app = Flask(__name__)
@@ -28,12 +22,14 @@ app.secret_key = 'asdsadasd'
 DO_BODY_DETECT = False
 DEBUG = 1
 
-def get_dataframe(ball_to_line_img, ball_frame_names):
-    print("size in func:",len(ball_to_line_img))
-    print("type in func:",type(ball_to_line_img))
-    print("ball_frame_names in func:",ball_frame_names)
 
-    df = pd.DataFrame(columns=['first','second','third','fourth','fifth','spinrate','Norm_spinrate','Norm_spinrate_minus'])
+def get_dataframe(ball_to_line_img, ball_frame_names):
+    print("size in func:", len(ball_to_line_img))
+    print("type in func:", type(ball_to_line_img))
+    print("ball_frame_names in func:", ball_frame_names)
+
+    df = pd.DataFrame(
+        columns=['first', 'second', 'third', 'fourth', 'fifth', 'spinrate', 'Norm_spinrate', 'Norm_spinrate_minus'])
     save_1 = []
     save_2 = []
     save_3 = []
@@ -63,7 +59,8 @@ def get_dataframe(ball_to_line_img, ball_frame_names):
     # df["Norm_spinrate_minus"] = minus_Norm_spinrate_list
     return df
 
-def gen_pitcherholistic_frames(video_name,video_path):
+
+def gen_pitcherholistic_frames(video_name, video_path):
     '''
     输入：原视频地址
     '''
@@ -76,7 +73,7 @@ def gen_pitcherholistic_frames(video_name,video_path):
     cap = cv2.VideoCapture(video_path)
 
     frame_index = 0
-    frame_count = 0 # frame_index / interval
+    frame_count = 0  # frame_index / interval
     videoFPS = 60
 
     if cap.isOpened():
@@ -85,14 +82,14 @@ def gen_pitcherholistic_frames(video_name,video_path):
         print('openerror!')
         success = False
 
-    interval = 1  #視頻幀計數間隔次數
+    interval = 1  # 視頻幀計數間隔次數
     while success:
         success, frame = cap.read()
         frame_count = int(frame_index / interval)
         if frame_index % interval == 0:
             # cv2.imwrite('outputFile'+ '\\' + str(frame_count) + '.jpg', frame)
             IMAGE_FILES.append(frame)
-        
+
         frame_index += 1
         # cv2.waitKey(1)
     cap.release()
@@ -102,10 +99,10 @@ def gen_pitcherholistic_frames(video_name,video_path):
     # For static images:
 
     with mp_holistic.Holistic(
-        static_image_mode=True,
-        model_complexity=2,
-        enable_segmentation=True,
-        refine_face_landmarks=True) as holistic:
+            static_image_mode=True,
+            model_complexity=2,
+            enable_segmentation=True,
+            refine_face_landmarks=True) as holistic:
 
         for idx, file in enumerate(IMAGE_FILES):
             # image = cv2.imread(file)
@@ -142,24 +139,26 @@ def gen_pitcherholistic_frames(video_name,video_path):
                 mp_holistic.FACEMESH_TESSELATION,
                 landmark_drawing_spec=None,
                 connection_drawing_spec=mp_drawing_styles
-                .get_default_face_mesh_tesselation_style())
+                    .get_default_face_mesh_tesselation_style())
             mp_drawing.draw_landmarks(
                 annotated_image,
                 results.pose_landmarks,
                 mp_holistic.POSE_CONNECTIONS,
                 landmark_drawing_spec=mp_drawing_styles.
-                get_default_pose_landmarks_style())
+                    get_default_pose_landmarks_style())
             # cv2.imshow('frame', annotated_image)
             # cv2.waitKey(20)
 
             if not os.path.exists('file/pitcherholistic_frames/' + video_name + '/'):
                 os.mkdir('file/pitcherholistic_frames/' + video_name + '/')
-            cv2.imwrite('file/pitcherholistic_frames/'+ video_name +'/'+ 'annotated_image' + str(idx) + '.png', annotated_image)
+            cv2.imwrite('file/pitcherholistic_frames/' + video_name + '/' + 'annotated_image' + str(idx) + '.png',
+                        annotated_image)
             # Plot pose world landmarks.
             # mp_drawing.plot_landmarks(
             #     results.pose_world_landmarks, mp_holistic.POSE_CONNECTIONS)
 
             # print('none count:',testcount)
+
 
 def frames2video(video_name, video_path):
     '''
@@ -171,18 +170,21 @@ def frames2video(video_name, video_path):
     video.release()
 
     img = cv2.imread('file/pitcherholistic_frames/' + video_name + '/' + 'annotated_image0.png')  # 读取保存的任意一张图片
-    size = (img.shape[1],img.shape[0])  #获取视频中图片宽高度信息
-    fourcc = cv2.VideoWriter_fourcc(*"XVID") # 视频编码格式
-    videoWrite = cv2.VideoWriter('file/return/video_return.avi',fourcc,fps,size)# 根据图片的大小，创建写入对象 （文件名，支持的编码器，帧率，视频大小（图片大小））
+    size = (img.shape[1], img.shape[0])  # 获取视频中图片宽高度信息
+    fourcc = cv2.VideoWriter_fourcc(*"XVID")  # 视频编码格式
+    videoWrite = cv2.VideoWriter('file/return/video_return.avi', fourcc, fps,
+                                 size)  # 根据图片的大小，创建写入对象 （文件名，支持的编码器，帧率，视频大小（图片大小））
 
-    files = os.listdir('file/pitcherholistic_frames/'+ video_name)
+    files = os.listdir('file/pitcherholistic_frames/' + video_name)
     out_num = len(files)
-    print('frame number',out_num)
+    print('frame number', out_num)
     for i in range(0, out_num):
-        fileName = 'file/pitcherholistic_frames/' + video_name + '/' + 'annotated_image' + str(i) + '.png'    #循环读取所有的图片,假设以数字顺序命名
+        fileName = 'file/pitcherholistic_frames/' + video_name + '/' + 'annotated_image' + str(
+            i) + '.png'  # 循环读取所有的图片,假设以数字顺序命名
         img = cv2.imread(fileName)
-        videoWrite.write(img)# 将图片写入所创建的视频对象
-    videoWrite.release() # 释放了才能完成写入，连续写多个视频的时候这句话非常关键
+        videoWrite.write(img)  # 将图片写入所创建的视频对象
+    videoWrite.release()  # 释放了才能完成写入，连续写多个视频的时候这句话非常关键
+
 
 def video_encode(video_path):
     '''
@@ -194,7 +196,7 @@ def video_encode(video_path):
         f.close()
 
     # 写出base64_data为视频
-    with open('file/return/json_return.txt',mode = 'wb') as f:
+    with open('file/return/json_return.txt', mode='wb') as f:
         f.write(base64_data)
         f.close()
 
@@ -202,11 +204,13 @@ def video_encode(video_path):
     #     f.write(base64_data)
     #     f.close()
 
-    return str(base64_data,encoding = "utf8")
+    return str(base64_data, encoding="utf8")
+
 
 @app.route('/')
 def upload_form():
     return render_template('upload.html')
+
 
 MEDIA_PATH = './file/uploded_video'
 
@@ -242,13 +246,13 @@ def spinrate():
         print('upload_video filename: ' + filename)
 
     # print("video_path:",video_path)
-    
+
     if DO_BODY_DETECT:
-        gen_pitcherholistic_frames(filename,filename)
-        frames2video(filename,filename)
+        gen_pitcherholistic_frames(filename, filename)
+        frames2video(filename, filename)
         video_return_str = video_encode('file/return/video_return.avi')
 
-    ball_to_line_img,ball_frame_names = cutball(video_path)
+    ball_to_line_img, ball_frame_names = cutball(video_path)
     df = get_dataframe(ball_to_line_img, ball_frame_names)
     pred_spinrate = pred(df)
     # lineball_path = cutball(video_path)
@@ -269,7 +273,7 @@ def spinrate():
     #     # print(request.data)
     #     flash('No file part')
     #     return redirect(request.url)
-    
+
     # file = request.files['file']
     # if file.filename == '':
     #     flash('No image selected for uploading')
@@ -288,9 +292,8 @@ def spinrate():
 @app.route('/ballspeed', methods=['POST'])
 def ballspeed():
     time_start = time.time()
-    print(request.files)
     if 'file' not in request.files:
-        print(request.files)
+
         # print(request.data)
         print('No file part')
         return redirect(request.url)
@@ -307,8 +310,9 @@ def ballspeed():
         file.save(video_path)
         print('upload_video filename: ' + filename)
 
-    print("video_path:",video_path) #C:\Users\Ricky\PycharmProjects\server\file\uploded_video\output_20221109142508.mov
-    print("filename:",filename)
+    print("video_path:",
+          video_path)  # C:\Users\Ricky\PycharmProjects\server\file\uploded_video\output_20221109142508.mov
+    print("filename:", filename)
 
     # emptydir('output')
     cal_path = "./file/cal_video/" + filename
@@ -316,30 +320,32 @@ def ballspeed():
     time_front = time.time()
     print('processing recive time:', time_front - time_start, 's')
 
-    mtx = [[4600.98769128, 0, 961.17445224], [0, 4574.72596027, 537.80462204], [0, 0, 1]]
-    dist = [[0.84660277, -15.05073586, 0.06927329, 0.04566403, 105.27604409]]
-    mtx = np.asarray(mtx)
-    dist = np.asarray(dist)
-    undistortion(mtx, dist,video_path)
-    time_mid = time.time()
-    print('processing remake video time:', time_mid - time_start, 's')
+    # mtx = [[4600.98769128, 0, 961.17445224], [0, 4574.72596027, 537.80462204], [0, 0, 1]]
+    # dist = [[0.84660277, -15.05073586, 0.06927329, 0.04566403, 105.27604409]]
+    # mtx = np.asarray(mtx)
+    # dist = np.asarray(dist)
+    # undistortion(mtx, dist, video_path)
+    # time_mid = time.time()
+    # print('processing remake video time:', time_mid - time_start, 's')
+    #
+    # ball_speed = blob(cal_path, 'outputMP4')
+    good_frames = blob2(video_name=cal_path)
+    ball_speed = calc_ball_speed(good_frames)
 
-
-    ball_speed = blob(cal_path,'outputMP4')
-    
     if DO_BODY_DETECT:
-        gen_pitcherholistic_frames(filename,filename)
-        frames2video(filename,filename)
+        gen_pitcherholistic_frames(filename, filename)
+        frames2video(filename, filename)
         video_return_str = video_encode('file/return/video_return.avi')
 
-    print('ball_speed:',ball_speed)
+    print('ball_speed:', ball_speed)
     # data_return = {"RPM":int(ball_speed),"video_data": video_return_str}
-    data_return = {"RPM":int(ball_speed)}
+    data_return = {"RPM": int(ball_speed)}
 
     time_end = time.time()
     print('processing time:', time_end - time_start, 's')
 
     return jsonify(data_return)
+
 
 # @app.route('/display/<filename>')
 # def display_video(filename):
@@ -376,13 +382,13 @@ def ballspeed():
 # #   }
 # #   stores.append(new_store)
 # #   return jsonify(new_store)
-@app.route("/upload", methods=["POST"])
-def upload():
-    time_start = time.time()
+@app.route("/upload/<vid_name>", methods=["POST"])
+def upload(vid_name):
+    start_time = time.perf_counter()
     print("**")
     print("uploading data...")
-    print("server accept mime: ", request.accept_mimetypes) #/*
-    print("client send mime: ", request.mimetype) # video/quicktime
+    print("server accept mime: ", request.accept_mimetypes)  # /*
+    print("client send mime: ", request.mimetype)  # video/quicktime
     print("data {} bytes".format(len(request.data)))
     print(type(request.data))
 
@@ -410,10 +416,12 @@ def upload():
     # # ret, frame = video_stream.read()
     # # cv2.imshow('frame', frame)
     # # cv2.waitKey(1)
+    videoName = "output" + vid_name + ".mov"
 
-    with open('output.mov', 'wb') as f:
+    with open(videoName, 'wb') as f:
         f.write(request.data)
-        f.close()
+    end_time = time.perf_counter()
+    print('blob processing time', end_time - start_time, 's')
 
     spinrate = 1832.6
     ballspeed = 92.4

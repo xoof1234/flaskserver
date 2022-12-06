@@ -60,6 +60,18 @@ def emptydir(dirname):
 
     os.mkdir(dirname)
 
+
+cam_mtx = np.array([[4600.98769128, 0, 961.17445224], [0, 4574.72596027, 537.80462204], [0, 0, 1]])
+cam_dist = np.array([[0.84660277, -15.05073586, 0.06927329, 0.04566403, 105.27604409]])
+def calibrate_frame_1080p(img):
+    frame_shape = 1920, 1080
+
+    img_mtx, roi = cv2.getOptimalNewCameraMatrix(cam_mtx, cam_dist, frame_shape, 1, frame_shape)
+    dst = cv2.undistort(img, cam_mtx, cam_dist, None, img_mtx)
+
+    x, y, w, h = roi
+    dst = dst[y:y + h, x:x + w]
+    return cv2.resize(dst, frame_shape)
 # emptydir('output')
 #
 # criteria = (cv2.TERM_CRITERIA_EPS + cv2.TERM_CRITERIA_MAX_ITER, 30, 0.001)
