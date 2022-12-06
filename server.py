@@ -231,7 +231,7 @@ def spinrate():
     # print("client send mime: ", request.mimetype)  # video/quicktime
     print("data {} bytes".format(len(request.data)))
     # print(type(request.data))
-    filename = 'video1.mov'
+    filename = time.strftime("%H:%M:%S", time.localtime())
     video_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
 
     time2 = time.perf_counter()
@@ -239,7 +239,8 @@ def spinrate():
 
     with open(video_path, 'wb') as f:
         f.write(request.data)
-    time3 = time.perf_counter()
+        time3 = time.perf_counter()
+
     print('writting time:', time3-time2, 's')
 
 
@@ -307,34 +308,52 @@ def spinrate():
 
 @app.route('/ballspeed', methods=['POST'])
 def ballspeed():
-    time_start = time.time()
-    if 'file' not in request.files:
+    time1 = time.perf_counter()
 
-        # print(request.data)
-        print('No file part')
-        return redirect(request.url)
+    # print("server accept mime: ", request.accept_mimetypes)  # /*
+    # print("client send mime: ", request.mimetype)  # video/quicktime
+    print("data {} bytes".format(len(request.data)))
+    # print(type(request.data))
+    filename = time.strftime("%H:%M:%S", time.localtime())
+    video_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
 
-    file = request.files['file']
-    if file.filename == '':
-        print('No image selected for uploading')
-        return redirect(request.url)
-    else:
-        print(request.files)
-        # print(request.data)
-        filename = secure_filename(file.filename)
-        video_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
-        file.save(video_path)
-        print('upload_video filename: ' + filename)
+    time2 = time.perf_counter()
+    print('recieving time:', time2-time1, 's')
 
-    print("video_path:",
-          video_path)  # C:\Users\Ricky\PycharmProjects\server\file\uploded_video\output_20221109142508.mov
-    print("filename:", filename)
+    with open(video_path, 'wb') as f:
+        f.write(request.data)
+        time3 = time.perf_counter()
+
+    print('writting time:', time3-time2, 's')
+
+    # time_start = time.time()
+    # if 'file' not in request.files:
+
+    #     # print(request.data)
+    #     print('No file part')
+    #     return redirect(request.url)
+
+    # file = request.files['file']
+    # if file.filename == '':
+    #     print('No image selected for uploading')
+    #     return redirect(request.url)
+    # else:
+    #     print(request.files)
+    #     # print(request.data)
+    #     filename = secure_filename(file.filename)
+    #     video_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+    #     file.save(video_path)
+    #     print('upload_video filename: ' + filename)
+
+    # print("video_path:",
+    #       video_path)  # C:\Users\Ricky\PycharmProjects\server\file\uploded_video\output_20221109142508.mov
+    # print("filename:", filename)
 
     # emptydir('output')
-    cal_path = "./file/cal_video/" + filename
+    cal_path = "./file/uploded_video/" + filename
     print("cal_path: ", cal_path)
-    time_front = time.time()
-    print('processing recive time:', time_front - time_start, 's')
+    # time_front = time.time()
+    # print('processing recive time:', time_front - time_start, 's')
 
     # mtx = [[4600.98769128, 0, 961.17445224], [0, 4574.72596027, 537.80462204], [0, 0, 1]]
     # dist = [[0.84660277, -15.05073586, 0.06927329, 0.04566403, 105.27604409]]
@@ -357,8 +376,8 @@ def ballspeed():
     # data_return = {"RPM":int(ball_speed),"video_data": video_return_str}
     data_return = {"RPM": int(ball_speed)}
 
-    time_end = time.time()
-    print('processing time:', time_end - time_start, 's')
+    time_end = time.perf_counter()
+    print('processing time:', time_end - time3, 's')
 
     return jsonify(data_return)
 
