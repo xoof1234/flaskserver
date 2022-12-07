@@ -42,7 +42,7 @@ def blob(video_name, outputDir):
     history = 8
     varThreshold = 100
     bShadowDetection = True
-    pixelToMeter = 394.44
+    pixelToMeter = 615.36 #394.44
     fourcc = cv2.VideoWriter_fourcc(*'mp4v')
     fname = video_name.split('\\')[-1]
     fname = fname.split('.')[0]
@@ -251,7 +251,7 @@ def blob2(video_name, start_frame=101):
 
         for key_point in key_points:
             cx, cy = int(key_point.pt[0]), int(key_point.pt[1])  # x,y坐標
-            if 960 < cx < 1920 and 0 < cy < 700:
+            if 0 < cx < 1920 and 0 < cy < 1080:
                 assert prev_frame is not None, "我說不可能"
                 if wait_for_saving_prev_frame_to_array_flag and prev_frame_count != frame_count and not already_save_prev_frame_to_array_flag:
                     print(f'save prev {prev_frame_count=}')

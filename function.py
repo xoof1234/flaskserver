@@ -16,77 +16,101 @@ def create_folder(path):
 
 def cutframe_iphone(video_name):
     ball_frames = []
-    video_frame = []
+    video_frames = []
     loss_frame = []
     ball_frame_names = []
     history = 500
     varThreshold = 180
     bShadowDetection = True
-    #背景切割器
-    mog = cv2.createBackgroundSubtractorMOG2(history,varThreshold,bShadowDetection)
+    # 背景切割器
+    mog = cv2.createBackgroundSubtractorMOG2(history, varThreshold, bShadowDetection)
     #
     es = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (5, 5))
     cap = cv2.VideoCapture(video_name)
 
     # cap.set(cv2.CAP_PROP_FRAME_WIDTH, 720)
     # cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 540)
-    #開始幀數
-    cap.set(cv2.CAP_PROP_POS_FRAMES, 260)
+    # 開始幀數
+    cap.set(cv2.CAP_PROP_POS_FRAMES, 100)
     frame_count = 0
     img_count = 0
-    while len(ball_frames)<30:
+    while (1):
 
         ret, frame = cap.read()
 
         if ret:
             try:
-                #video_frame.append(frame)
+                # video_frame.append(frame)
 
-                #背景切割器
+                # 背景切割器
                 fgmask = mog.apply(frame)
+                #cv2.imshow('openg', fgmask)
+                #cv2.waitKey(1)
                 th = cv2.threshold(fgmask, 244, 255, cv2.THRESH_BINARY)[1]
                 # cv2.imshow('th', th)
-                
+
                 # 開運算
                 opening = cv2.morphologyEx(th, cv2.MORPH_OPEN, es, iterations=1)
                 # cv2.imshow('opening', opening)
-
+                # cv2.waitKey(5)
                 cont, hierarchy = cv2.findContours(opening, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_TC89_L1)
 
                 for c in cont:
-                    ROI_xleft = 800
-                    ROI_xright = 1600
-                    ROI_ytop = 400
-                    ROI_ydown = 800
-                    # cv2.rectangle(frame,(ROI_xleft,ROI_ytop),(ROI_xright,ROI_ydown),(0,255,0),2)
-                    #面積
-                    if (cv2.contourArea(c) < 1800 and (cv2.contourArea(c) > 270)):
+                    # ROI_xleft = 770
+                    # ROI_xright = 1250
+                    # ROI_ytop = 50
+                    # ROI_ydown = 550
+                    ROI_xleft = 770
+                    ROI_xright = 1500
+                    ROI_ytop = 50
+                    ROI_ydown = 750
+                    #cv2.rectangle(frame, (ROI_xleft, ROI_ytop), (ROI_xright, ROI_ydown), (0, 255, 0), 2)
+                    # 面積
+                    if (cv2.contourArea(c) < 8000 and (cv2.contourArea(c) > 270)):
 
                         (x, y, w, h) = cv2.boundingRect(c)
-                        #if (abs(w - h) < 10 and (w < 40 and h < 40) and y < 500):
-                        #if (abs(w - h) < 10 and (w < 35 and h < 35) and (y < 450) and (y > 250) and (x > 325)):
-                        #if (abs(w - h) < 10 and (w < 40 and h < 40) and (y > 200) and (y < 600) and (x > 700) and (x < 1000)):
-                        if (abs(w - h) < 10  and (w < 60 and h < 60) and (y > ROI_ytop) and (y < ROI_ydown) and (x > ROI_xleft) and (x < ROI_xright)):
-                            #print(cv2.contourArea(c))
-                            ROI = frame[(y - 5):(y + h + 5), (x - 5):(x + w + 5)]
+                        # if (abs(w - h) < 10 and (w < 40 and h < 40) and y < 500):
+                        # if (abs(w - h) < 10 and (w < 35 and h < 35) and (y < 450) and (y > 250) and (x > 325)):
+                        # if (abs(w - h) < 10 and (w < 40 and h < 40) and (y > 200) and (y < 600) and (x > 700) and (x < 1000)):
+                        if ((y > ROI_ytop) and (y < ROI_ydown) and (
+                                x > ROI_xleft) and (x < ROI_xright)):
+                            # print(cv2.contourArea(c))
+                            padding = 15
+                            square_pad = 10
+
+                            if (w > h):
+                                padding = w - h
+                                ROI = frame[(y - square_pad):(y + h + square_pad + padding), (x - square_pad):(x + w + square_pad)]
+                            elif(h > w):
+                                padding = h - w
+                                ROI = frame[(y - square_pad):(y + h + square_pad), (x - square_pad):(x + w + square_pad + padding)]
+                            # else:
+                            #     ROI = frame[(y - square_pad):(y + h + square_pad), (x - square_pad):(x + w + square_pad)]
+
+                            # 亮度調整
 
                             ROI_hsv = cv2.cvtColor(ROI, cv2.COLOR_BGR2HSV)
                             v_temp = round((np.mean(ROI_hsv[:, :, 2]) / 52.87), 2)
                             ROI_hsv[:, :, 2] = ROI_hsv[:, :, 2] / v_temp
                             ROI_hsv = cv2.cvtColor(ROI_hsv, cv2.COLOR_HSV2BGR)
-                            #亮度調整
-                            img = modify_lightness_saturation(
-                                ROI_hsv)
+                            img = modify_lightness_saturation(ROI_hsv)
 
                             img = cv2.resize(img, (48, 48))
 
-                            cv2.rectangle(frame,(x,y),(x+w,y+h),(0,255,0),2)
+                            # if (w > h):
+                            #     cv2.rectangle(frame, (x - square_pad, y - square_pad), (x + w + square_pad, y + h + square_pad + padding), (0, 255, 0), 2)
+                            # elif(h > w):
+                            #     cv2.rectangle(frame, (x - square_pad, y - square_pad), (x + w + square_pad + padding, y + h + square_pad), (0, 255, 0), 2)
+                            # else:
+                            #     cv2.rectangle(frame, (x - square_pad, y - square_pad), (x + w + square_pad, y + h + square_pad),
+                            #                   (0, 255, 0), 2)
 
                             ball_frames.append(img)
                             ball_frame_names.append(frame_count)
 
-                frame_count += 1
-                # video_frame.append(frame)
+                # cv2.imshow('open', frame)
+                # cv2.waitKey(5)
+                video_frames.append(frame)
 
 
 
@@ -94,13 +118,13 @@ def cutframe_iphone(video_name):
             except cv2.error as e:
                 print(e)
                 continue
+            frame_count += 1
         else:
             break
 
     cap.release()
-
-    # return np.array(video_frame),np.array(ball_frames),ball_frame_names
-    return np.array(ball_frames),ball_frame_names
+    #return np.array(ball_frames), ball_frame_names
+    return np.array(video_frames), np.array(ball_frames), ball_frame_names
 
 
 def cutframe_cam(video_name):
@@ -188,7 +212,7 @@ def cutframe_cam(video_name):
                 video_frame.append(frame)
 
             except cv2.error as e:
-                print(e)
+                # print(e)
                 continue
 
         else:

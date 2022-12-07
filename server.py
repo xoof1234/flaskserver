@@ -231,7 +231,7 @@ def spinrate():
     # print("client send mime: ", request.mimetype)  # video/quicktime
     print("data {} bytes".format(len(request.data)))
     # print(type(request.data))
-    filename = time.strftime("%H:%M:%S", time.localtime())
+    filename = time.strftime("%H%M%S", time.localtime()) + '.mov'
     video_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
 
     time2 = time.perf_counter()
@@ -314,7 +314,7 @@ def ballspeed():
     # print("client send mime: ", request.mimetype)  # video/quicktime
     print("data {} bytes".format(len(request.data)))
     # print(type(request.data))
-    filename = time.strftime("%H:%M:%S", time.localtime())
+    filename = time.strftime("%H%M%S", time.localtime()) + '.mov'
     video_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
 
     time2 = time.perf_counter()
