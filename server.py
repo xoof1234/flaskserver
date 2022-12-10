@@ -3,6 +3,8 @@ import time
 import mediapipe as mp
 import pandas as pd
 import pybase64
+import datetime
+import io
 from flask import Flask, request, redirect, render_template, jsonify, send_file, make_response
 from werkzeug.utils import secure_filename
 
@@ -417,54 +419,114 @@ def ballspeed():
 # #   }
 # #   stores.append(new_store)
 # #   return jsonify(new_store)
+
+
+
+streamBuf = io.BytesIO()
+streamBuf1 = io.BytesIO()
+streamBuf2 = io.BytesIO()
+flagUpload = False
+flagUpload1 = False
+flagUpload2 = False
 @app.route("/upload/<vid_name>", methods=["POST"])
 def upload(vid_name):
     start_time = time.perf_counter()
-    print("**")
+    print("******************************************")
     print("uploading data...")
     print("server accept mime: ", request.accept_mimetypes)  # /*
     print("client send mime: ", request.mimetype)  # video/quicktime
-    print("data {} bytes".format(len(request.data)))
+    print("data buf {} bytes".format(len(request.data)))
     print(type(request.data))
 
-    # # video_stream = None
-    # count = 0
-    # with tempfile.NamedTemporaryFile() as temp:
-    #     temp.write(request.data)
-    #     print(temp.tell())
-    #     temp.seek(0)
-    #     print(temp.read(2))
-    #     print(temp.name)
-    #     video_stream = cv2.VideoCapture(temp.name)
-    #     while count < 5:
-    #         ret, frame = video_stream.read()
-    #         print('count:', count)
-    #         print('type:', type(frame))
-    #         print('ret:', ret)
-    #         count += 1
-    #     # cv2.imshow('frame', frame)
-    #     # cv2.waitKey(1)
-    #
-    # time_end = time.time()
-    # print('processing time:', time_end - time_start, 's')
-    #
-    # # ret, frame = video_stream.read()
-    # # cv2.imshow('frame', frame)
-    # # cv2.waitKey(1)
-    videoName = "output" + vid_name + ".mov"
+    end_time = time.perf_counter()
+    print('blob processing time', end_time - start_time, 's')
 
-    with open(videoName, 'wb') as f:
-        f.write(request.data)
+    streamBuf.write(request.data)
+    global flagUpload
+    flagUpload = True
+    writeMovFile()
+
+    spinrate = 1832.6
+    ballspeed = 92.4
+    data_return = {"RPM": int(spinrate)}
+    print("upload",datetime.datetime.now())
+    print(time.strftime('%Y-%m-%d %H:%M:%S', time.localtime()))
+    return jsonify(data_return)
+
+@app.route("/upload1/<vid_name>", methods=["POST"])
+def upload1(vid_name):
+    start_time = time.perf_counter()
+    print("1*****************************************")
+    print("uploading data...")
+    print("server accept mime: ", request.accept_mimetypes)  # /*
+    print("client send mime: ", request.mimetype)  # video/quicktime
+    print("data buf2 {} bytes".format(len(request.data)))
+    print(type(request.data))
+
+    end_time = time.perf_counter()
+    print('blob processing time', end_time - start_time, 's')
+
+    streamBuf1.write(request.data)
+    global flagUpload1
+    flagUpload1 = True
+    writeMovFile()
+
+    spinrate = 1832.6
+    ballspeed = 92.4
+    data_return = {"RPM": int(spinrate)}
+    print("upload1", datetime.datetime.now())
+    print(time.strftime('%Y-%m-%d %H:%M:%S', time.localtime()))
+    return jsonify(data_return)
+
+@app.route("/upload2/<vid_name>", methods=["POST"])
+def upload2(vid_name):
+    start_time = time.perf_counter()
+    print("2*****************************************")
+    print("uploading data...")
+    print("server accept mime: ", request.accept_mimetypes)  # /*
+    print("client send mime: ", request.mimetype)  # video/quicktime
+    print("data buf2 {} bytes".format(len(request.data)))
+    print(type(request.data))
+
+    streamBuf2.write(request.data)
+    global flagUpload2
+    flagUpload2 = True
+    writeMovFile()
+
     end_time = time.perf_counter()
     print('blob processing time', end_time - start_time, 's')
 
     spinrate = 1832.6
     ballspeed = 92.4
     data_return = {"RPM": int(spinrate)}
-
+    print("upload2",datetime.datetime.now())
+    print(time.strftime('%Y-%m-%d %H:%M:%S', time.localtime()))
     time.sleep(5)
     return jsonify(data_return)
 
+def writeMovFile():
+    global flagUpload, flagUpload1, flagUpload2
+    videoName = "output" + ".mov"
+    # if len(streamBuf)!=0 and len(streamBuf1)!=0 and len(streamBuf2)!=0:
+    if flagUpload==True and flagUpload1==True and flagUpload2==True:
+        with open(videoName, 'wb') as f:
+            # print("write buf", len(streamBuf))
+            f.write(streamBuf.getbuffer())
+            # print("write buf1", len(streamBuf))
+            f.write(streamBuf1.getbuffer())
+            # print("write buf2", len(streamBuf))
+            f.write(streamBuf2.getbuffer())
+
+            print("buffer clear")
+            streamBuf.flush()
+            streamBuf1.flush()
+            streamBuf2.flush()
+            flagUpload=False
+            flagUpload1=False
+            flagUpload2=False
+            # print(len(streamBuf))
+            # print(len(streamBuf1))
+            # print(len(streamBuf2))
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=8000, debug=True)
+    app.run(host="0.0.0.0", port=8000, debug=False, threaded=True)
