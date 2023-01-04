@@ -41,7 +41,7 @@ def get_dataframe(ball_to_line_img, ball_frame_names):
     # df["Norm_spinrate_minus"] = minus_Norm_spinrate_list
     return df
 
-video_name = '2022103319.mov'
+video_name = '2022101529.mov'
 video_path = '.\\file\\uploded_video\\'+ video_name
 
 time_start = perf_counter()

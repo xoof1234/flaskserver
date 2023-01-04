@@ -13,7 +13,7 @@ def root_mean_squared_error(y_true, y_pred):
     msle = tf.keras.losses.MeanSquaredLogarithmicError()
     return K.sqrt(msle(y_true, y_pred))
 
-model = load_model('./model/spinrate__240FPS.ckpt' ,custom_objects={'root_mean_squared_error': root_mean_squared_error})
+model = load_model('./model/spinrate__new_240FPS.ckpt' ,custom_objects={'root_mean_squared_error': root_mean_squared_error})
 
 def pred(formed_df):
     print("pred start...")
