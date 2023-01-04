@@ -12,6 +12,8 @@ from cutBall import cutball
 from function import *
 from pred_RPM_pred_ip import pred
 
+import gzip
+
 UPLOAD_FOLDER = './file/uploded_video'
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
@@ -237,8 +239,9 @@ def spinrate():
     time2 = time.perf_counter()
     print('recieving time:', time2-time1, 's')
 
+    t = gzip.decompress(request.data)
     with open(video_path, 'wb') as f:
-        f.write(request.data)
+        f.write(t)
         time3 = time.perf_counter()
 
     print('writting time:', time3-time2, 's')
@@ -320,8 +323,9 @@ def ballspeed():
     time2 = time.perf_counter()
     print('recieving time:', time2-time1, 's')
 
+    t = gzip.decompress(request.data)
     with open(video_path, 'wb') as f:
-        f.write(request.data)
+        f.write(t)
         time3 = time.perf_counter()
 
     print('writting time:', time3-time2, 's')
