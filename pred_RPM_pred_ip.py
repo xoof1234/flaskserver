@@ -80,7 +80,10 @@ def pred(formed_df):
         # pred = test_predict[i][0][0] * (s_max - s_min) + s_min
         test_predict_temp.append(pred)
         #print(test_predict[i][0][0])
-
+        
+    test_predict_temp = np.array(test_predict_temp) * 11/12
+    test_predict_temp = test_predict_temp[test_predict_temp != np.max(test_predict_temp)]
+    
     df["pred"] = test_predict_temp
     df.to_csv('./file/csv/result.csv')
     res = df["pred"].mean()
