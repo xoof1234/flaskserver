@@ -307,7 +307,12 @@ def spinrate():
     #     print('upload_video filename: ' + filename)
     #     flash('Video successfully uploaded and displayed below')
     #     return render_template('upload.html', filename=filename)
-
+    
+@app.route('/parameter', methods=['POST'])
+def parameter():
+    content = request.json
+    print(content['height'])
+    print(content['lenght'])
 
 @app.route('/ballspeed', methods=['POST'])
 def ballspeed():
