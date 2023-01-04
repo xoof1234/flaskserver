@@ -62,8 +62,8 @@ def cutframe_iphone(video_name):
                     # ROI_ydown = 550
                     ROI_xleft = 770
                     ROI_xright = 1500
-                    ROI_ytop = 50
-                    ROI_ydown = 750
+                    ROI_ytop = 250
+                    ROI_ydown = 850
                     #cv2.rectangle(frame, (ROI_xleft, ROI_ytop), (ROI_xright, ROI_ydown), (0, 255, 0), 2)
                     # 面積
                     if (cv2.contourArea(c) < 8000 and (cv2.contourArea(c) > 270)):
@@ -84,8 +84,8 @@ def cutframe_iphone(video_name):
                             elif(h > w):
                                 padding = h - w
                                 ROI = frame[(y - square_pad):(y + h + square_pad), (x - square_pad):(x + w + square_pad + padding)]
-                            # else:
-                            #     ROI = frame[(y - square_pad):(y + h + square_pad), (x - square_pad):(x + w + square_pad)]
+                            else:
+                                ROI = frame[(y - square_pad):(y + h + square_pad),(x - square_pad):(x + w + square_pad)]
 
                             # 亮度調整
 
