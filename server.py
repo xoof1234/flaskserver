@@ -6,7 +6,7 @@ import pybase64
 from flask import Flask, request, redirect, render_template, jsonify, send_file, make_response
 from werkzeug.utils import secure_filename
 
-from ball_speed_detect import blob,blob2,calc_ball_speed
+from ball_speed_detect import blob2,calc_ball_speed
 from calibration import undistortion
 from cutBall import cutball
 from function import *
@@ -361,18 +361,6 @@ def ballspeed():
     # emptydir('output')
     cal_path = "./file/uploded_video/" + filename
     print("cal_path: ", cal_path)
-    # time_front = time.time()
-    # print('processing recive time:', time_front - time_start, 's')
-
-    # mtx = [[4600.98769128, 0, 961.17445224], [0, 4574.72596027, 537.80462204], [0, 0, 1]]
-    # dist = [[0.84660277, -15.05073586, 0.06927329, 0.04566403, 105.27604409]]
-    # mtx = np.asarray(mtx)
-    # dist = np.asarray(dist)
-    # undistortion(mtx, dist, video_path)
-    # time_mid = time.time()
-    # print('processing remake video time:', time_mid - time_start, 's')
-    #
-    # ball_speed = blob(cal_path, 'outputMP4')
     good_frames = blob2(video_name=cal_path)
     ball_speed = calc_ball_speed(good_frames)
 
