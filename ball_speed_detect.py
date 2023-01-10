@@ -135,11 +135,11 @@ def blob2(video_name, start_frame=101):
     return good_frames
 
 
-def calc_ball_speed(frames):
+def calc_ball_speed(frames,pixelToMeter):
     print([f.id for f in frames])
     first_frame_idx = frames[0].id
     tmpVelo = []
-    pixelToMeter = 394.44
+    # pixelToMeter = 394.44
     lastCenter = (0, 0)
     veloCount = 0
     pitchVelo = 0

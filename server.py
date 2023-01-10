@@ -307,12 +307,18 @@ def spinrate():
     #     print('upload_video filename: ' + filename)
     #     flash('Video successfully uploaded and displayed below')
     #     return render_template('upload.html', filename=filename)
-    
+
+height = 0
+length = 0
 @app.route('/parameter', methods=['POST'])
 def parameter():
     content = request.json
+    height = content['height']
+    length = content['lenght']
     print(content['height'])
     print(content['lenght'])
+
+
 
 @app.route('/ballspeed', methods=['POST'])
 def ballspeed():
@@ -361,8 +367,9 @@ def ballspeed():
     # emptydir('output')
     cal_path = "./file/uploded_video/" + filename
     print("cal_path: ", cal_path)
+    pixelToMeter = height/length
     good_frames = blob2(video_name=cal_path)
-    ball_speed = calc_ball_speed(good_frames)
+    ball_speed = calc_ball_speed(good_frames, pixelToMeter)
 
     if DO_BODY_DETECT:
         gen_pitcherholistic_frames(filename, filename)
