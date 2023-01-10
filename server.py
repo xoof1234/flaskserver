@@ -317,6 +317,7 @@ def parameter():
     length = content['lenght']
     print(content['height'])
     print(content['lenght'])
+    print(height/length)
 
 
 
