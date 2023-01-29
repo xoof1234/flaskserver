@@ -313,12 +313,13 @@ length = 0
 @app.route('/parameter', methods=['POST'])
 def parameter():
     content = request.json
+    global height,length
     height = content['height']
     length = content['lenght']
-    print(content['height'])
-    print(content['lenght'])
+    print(content['height'],height)
+    print(content['lenght'],length)
     print(height/length)
-
+    return "0"
 
 
 @app.route('/ballspeed', methods=['POST'])
