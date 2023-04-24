@@ -1,4 +1,15 @@
 # flaskserver
+轉速預測：  
+輸入：影片本地地址video_path  
+輸出：轉速pred_spinrate  
+
+ball_to_line_img, ball_frame_names = cutball(video_path)  
+df = get_dataframe(ball_to_line_img, ball_frame_names)  
+pred_spinrate = pred(df)  
+
+cutball定義在cutBall.py  
+get_dataframe定義在server.py  
+pred定義在pred_RPM_pred_ip.py  
 ## server.py
 ### variables 
 DO_BODY_DETECT  
