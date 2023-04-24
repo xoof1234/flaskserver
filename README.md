@@ -48,5 +48,5 @@ Boolean，如果開啓debug會在server本地存儲影片frame、切出來的球
 (我印象中這個功能可能有問題，需要再檢查)
 ### functions
 #### line63 cutframe_iphone()
-功能：blob
+功能：blob  
 定義在function内，使用前需要根據影片調整ROI和frame起始位置
