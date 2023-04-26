@@ -210,8 +210,8 @@ def video_encode(video_path):
 
 
 @app.route('/')
-def upload_form():
-    return render_template('upload.html')
+def index():
+    return render_template('index.html')
 
 
 MEDIA_PATH = './file/uploded_video'
@@ -229,10 +229,7 @@ def serve_video(vid_name):
 def spinrate():
     time1 = time.perf_counter()
 
-    # print("server accept mime: ", request.accept_mimetypes)  # /*
-    # print("client send mime: ", request.mimetype)  # video/quicktime
     print("data {} bytes".format(len(request.data)))
-    # print(type(request.data))
     filename = time.strftime("%H%M%S", time.localtime()) + '.mov'
     video_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
 
@@ -247,26 +244,6 @@ def spinrate():
     print('writting time:', time3-time2, 's')
 
 
-    # if 'file' not in request.files:
-    #     print(request.files)
-    #     # print(request.data)
-    #     print('No file part')
-    #     return redirect(request.url)
-
-    # file = request.files['file']
-    # if file.filename == '':
-    #     print('No image selected for uploading')
-    #     return redirect(request.url)
-    # else:
-    #     print(request.files)
-    #     # print(request.data)
-    #     filename = secure_filename(file.filename)
-    #     video_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
-    #     file.save(video_path)
-    #     print('upload_video filename: ' + filename)
-
-    # print("video_path:",video_path)
-
     if DO_BODY_DETECT:
         gen_pitcherholistic_frames(filename, filename)
         frames2video(filename, filename)
@@ -275,9 +252,6 @@ def spinrate():
     ball_to_line_img, ball_frame_names = cutball(video_path)
     df = get_dataframe(ball_to_line_img, ball_frame_names)
     pred_spinrate = pred(df)
-    # lineball_path = cutball(video_path)
-    # getcsv(lineball_path)
-    # pred_spinrate = pred()
 
     data_return = {"RPM": int(pred_spinrate)}
 
@@ -287,26 +261,7 @@ def spinrate():
 
     return jsonify(data_return)
 
-    # MAYBE USELESS
-    # if 'file' not in request.files:
-    #     print(request.files)
-    #     # print(request.data)
-    #     flash('No file part')
-    #     return redirect(request.url)
-
-    # file = request.files['file']
-    # if file.filename == '':
-    #     flash('No image selected for uploading')
-    #     return redirect(request.url)
-    # else:
-    #     print(request.files)
-    #     # print(request.data)
-    #     filename = secure_filename(file.filename)
-    #     print(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-    #     file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-    #     print('upload_video filename: ' + filename)
-    #     flash('Video successfully uploaded and displayed below')
-    #     return render_template('upload.html', filename=filename)
+   
 
 height = 0
 length = 0
@@ -326,10 +281,9 @@ def parameter():
 def ballspeed():
     time1 = time.perf_counter()
 
-    # print("server accept mime: ", request.accept_mimetypes)  # /*
-    # print("client send mime: ", request.mimetype)  # video/quicktime
+    
     print("data {} bytes".format(len(request.data)))
-    # print(type(request.data))
+    
     filename = time.strftime("%H%M%S", time.localtime()) + '.mov'
     video_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
 
@@ -343,30 +297,7 @@ def ballspeed():
 
     print('writting time:', time3-time2, 's')
 
-    # time_start = time.time()
-    # if 'file' not in request.files:
-
-    #     # print(request.data)
-    #     print('No file part')
-    #     return redirect(request.url)
-
-    # file = request.files['file']
-    # if file.filename == '':
-    #     print('No image selected for uploading')
-    #     return redirect(request.url)
-    # else:
-    #     print(request.files)
-    #     # print(request.data)
-    #     filename = secure_filename(file.filename)
-    #     video_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
-    #     file.save(video_path)
-    #     print('upload_video filename: ' + filename)
-
-    # print("video_path:",
-    #       video_path)  # C:\Users\Ricky\PycharmProjects\server\file\uploded_video\output_20221109142508.mov
-    # print("filename:", filename)
-
-    # emptydir('output')
+    
     cal_path = "./file/uploded_video/" + filename
     print("cal_path: ", cal_path)
     pixelToMeter = height/length
@@ -386,45 +317,14 @@ def ballspeed():
     print('processing time:', time_end - time3, 's')
 
     return jsonify(data_return)
+    
+ALLOWED_EXTENSIONS = {'mp4', 'mov', 'avi'}
 
+def allowed_file(filename):
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
-# @app.route('/display/<filename>')
-# def display_video(filename):
-#     # print('display_video filename: ' + filename)
-#     return redirect(url_for('static', filename='uploads/' + filename), code=301)
-
-
-# # stores = [
-# #     {
-# #         'name':'Cool Store',
-# #         'items':[
-# #             {
-# #                 'name':'Coll Item',
-# #                 'price':9.99
-# #             }
-# #         ]
-# #     }
-# # ]
-
-# # @app.route('/')
-# # def home():
-# #     return render_template('index.html')
-
-# # @app.route('/store')
-# # def get_stores():
-# #     return jsonify({'stores':stores})
-
-# # @app.route('/store' , methods=['POST'])
-# # def create_store():
-# #   request_data = request.get_json()
-# #   new_store = {
-# #     'name':request_data['name'],
-# #     'items':[]
-# #   }
-# #   stores.append(new_store)
-# #   return jsonify(new_store)
-@app.route("/upload/<vid_name>", methods=["POST"])
-def upload(vid_name):
+@app.route('/upload', methods=['POST'])
+def upload_file():
     start_time = time.perf_counter()
     print("**")
     print("uploading data...")
@@ -433,43 +333,29 @@ def upload(vid_name):
     print("data {} bytes".format(len(request.data)))
     print(type(request.data))
 
-    # # video_stream = None
-    # count = 0
-    # with tempfile.NamedTemporaryFile() as temp:
-    #     temp.write(request.data)
-    #     print(temp.tell())
-    #     temp.seek(0)
-    #     print(temp.read(2))
-    #     print(temp.name)
-    #     video_stream = cv2.VideoCapture(temp.name)
-    #     while count < 5:
-    #         ret, frame = video_stream.read()
-    #         print('count:', count)
-    #         print('type:', type(frame))
-    #         print('ret:', ret)
-    #         count += 1
-    #     # cv2.imshow('frame', frame)
-    #     # cv2.waitKey(1)
-    #
-    # time_end = time.time()
-    # print('processing time:', time_end - time_start, 's')
-    #
-    # # ret, frame = video_stream.read()
-    # # cv2.imshow('frame', frame)
-    # # cv2.waitKey(1)
-    videoName = "output" + vid_name + ".mov"
+    if 'video' not in request.files:
+        return redirect(request.url)
 
-    with open(videoName, 'wb') as f:
-        f.write(request.data)
-    end_time = time.perf_counter()
-    print('blob processing time', end_time - start_time, 's')
+    file = request.files['video']
 
-    spinrate = 1832.6
-    ballspeed = 92.4
-    data_return = {"RPM": int(spinrate)}
+    if file.filename == '':
+        return redirect(request.url)
 
-    time.sleep(5)
-    return jsonify(data_return)
+    if file and allowed_file(file.filename):
+        filename = secure_filename(file.filename)
+        file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+        end_time = time.perf_counter()
+        print('blob processing time', end_time - start_time, 's')
+
+        spinrate = 1832.6
+        ballspeed = 92.4
+        data_return = {"RPM": int(spinrate)}
+
+        time.sleep(5)
+        return jsonify(data_return)
+
+    else:
+        return redirect(request.url)
 
 
 if __name__ == "__main__":
